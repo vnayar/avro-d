@@ -1,0 +1,6 @@
+name "avro-d"
+description "Library and code generators to use Apache Avro in D."
+authors "Vijay Nayar"
+copyright "Copyright © 2022, Vijay Nayar"
+license "Apache-2.0"
+targetPath "target"

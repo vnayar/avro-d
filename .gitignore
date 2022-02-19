@@ -19,6 +19,23 @@
 docs.json
 __dummy.html
 docs/
+target/
+<<<<<<< HEAD
 
 # Code coverage
 *.lst
+
+### VS Code ###
+.vscode/
+
+# Emacs/Vim
+\#*\#
+*~
+
+# AUCTex
+auto/
+
+# GNU Global
+GTAGS
+GRTAGS
+GPATH
