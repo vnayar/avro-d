@@ -45,11 +45,38 @@ class Parser {
   public Schema parseText(string text) {
     import std.json : parseJSON;
     JSONValue json = parseJSON(text);
-    return parseJson(json, schemaTable);
+    return parseJson(json);
+  }
+
+  unittest {
+    import std.stdio;
+    auto parser = new Parser();
+    Schema schema =  parser.parseText(q"EOS
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number", "type": ["int", "null"]},
+     {"name": "favorite_color", "type": ["string", "null"]}
+ ]
+}
+EOS");
+    assert(schema.getType() == Type.RECORD);
+    Field[] fields = schema.getFields();
+    assert(schema.getName() == "User");
+    assert(schema.getNamespace() == "example.avro");
+    assert(schema.getFullname() == "example.avro.User");
+    assert(fields.length == 3);
+    assert(fields[0].getName() == "name");
+    assert(fields[0].getSchema().getType() == Type.STRING);
+    assert(fields[1].getName() == "favorite_number");
+    assert(fields[1].getSchema().getType() == Type.UNION);
+    assert(fields[2].getName() == "favorite_color");
   }
 
   /// Builds a [Schema] from a JSON parse tree.
-  public Schema parseJson(JSONValue jsonSchema, SchemaTable schemaTable) {
+  public Schema parseJson(JSONValue jsonSchema) {
     import std.algorithm : map;
     import std.uni : toUpper;
 
@@ -103,7 +130,7 @@ class Parser {
                 ~ "a {\"type\": ... } expression.");
           }
           JSONValue fieldTypeNode = jsonField["type"];
-          Schema fieldTypeSchema = parseJson(fieldTypeNode, schemaTable);
+          Schema fieldTypeSchema = parseJson(fieldTypeNode);
           Field.Order order = Field.Order.ASCENDING;
           if ("order" in jsonField)
             order = jsonField["order"].str.toUpper.to!(Field.Order);
@@ -149,12 +176,12 @@ class Parser {
         JSONValue itemsNode = "items" in jsonSchema ? jsonSchema["items"] : JSONValue(null);
         if (itemsNode.isNull)
           throw new SchemaParseException("Array has no items type: " ~ jsonSchema.toString);
-        result = new ArraySchema(parseJson(itemsNode, schemaTable));
+        result = new ArraySchema(parseJson(itemsNode));
       } else if (type == "map") { // map
         JSONValue valuesNode = "values" in jsonSchema ? jsonSchema["values"] : JSONValue(null);
         if (valuesNode.isNull)
           throw new SchemaParseException("Map has no values type: " ~ jsonSchema.toString);
-        result = new MapSchema(parseJson(valuesNode, schemaTable));
+        result = new MapSchema(parseJson(valuesNode));
       } else if (isTypeFixed) { // fixed
         JSONValue sizeNode = "size" in jsonSchema ? jsonSchema["size"] : JSONValue(null);
         if (sizeNode.isNull || sizeNode.type != JSONType.integer)
@@ -191,7 +218,7 @@ class Parser {
       Schema[] types;
       types.reserve(jsonSchema.array.length);
       foreach (JSONValue typeNode; jsonSchema.array)
-        types ~= parseJson(typeNode, schemaTable);
+        types ~= parseJson(typeNode);
       return new UnionSchema(types);
     } else {
       throw new SchemaParseException("Schema not yet supported: " ~ jsonSchema.toString);

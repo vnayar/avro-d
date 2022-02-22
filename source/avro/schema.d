@@ -11,6 +11,10 @@ import avro.attributes : HasJsonAttributes;
 import avro.orderedmap : OrderedMap;
 import avro.exception : AvroRuntimeException, AvroTypeException, SchemaParseException;
 
+version (unittest) {
+  import std.exception : assertThrown, assertNotThrown;
+}
+
 /**
    An Avro Schema is one of the following:
    - A JSON string, matching a defined type like "int", "string", or another Schema's name.
@@ -64,6 +68,138 @@ public abstract class Schema {
     }
   }
 
+  package static JSONValue validateDefault(
+      string fieldName, Schema schema, JSONValue defaultValue) {
+    if (!defaultValue.isNull() && !isValidDefault(schema, defaultValue)) {
+      string message = "Invalid default for field " ~ fieldName ~ ": " ~ defaultValue.toString
+          ~ " not a " ~ schema.toString;
+      throw new AvroTypeException(message);
+    }
+    return defaultValue;
+  }
+
+  unittest {
+    import std.exception : assertThrown, assertNotThrown;
+    import std.json : parseJSON;
+
+    // Valid string defaults.
+    auto stringSchema = Schema.createPrimitive(Type.STRING);
+    assertNotThrown(validateDefault("a", stringSchema, JSONValue("fish")));
+    assertThrown!AvroTypeException(validateDefault("a", stringSchema, JSONValue(3)));
+    assertThrown!AvroTypeException(validateDefault("a", stringSchema, JSONValue(["a"])));
+
+
+    // Valid integer defaults.
+    auto intSchema = Schema.createPrimitive(Type.INT);
+    assertNotThrown(validateDefault("b", intSchema, JSONValue(1234)));
+    assertThrown!AvroTypeException(validateDefault("b", intSchema, JSONValue(4294967296)));
+    assertThrown!AvroTypeException(validateDefault("b", intSchema, JSONValue("bear")));
+
+    // Valid long defaults
+    auto longSchema = Schema.createPrimitive(Type.LONG);
+    assertNotThrown(validateDefault("c", longSchema, JSONValue(4294967296)));
+    assertThrown!AvroTypeException(validateDefault("c", longSchema, JSONValue([1])));
+    assertThrown!AvroTypeException(validateDefault("c", longSchema, JSONValue("bear")));
+
+    // Valid float/double defaults
+    auto floatSchema = Schema.createPrimitive(Type.FLOAT);
+    assertNotThrown(validateDefault("d", floatSchema, JSONValue(4294967296.123112431)));
+    assertThrown!AvroTypeException(validateDefault("d", floatSchema, JSONValue(1234)));
+    assertThrown!AvroTypeException(validateDefault("d", floatSchema, JSONValue("bear")));
+
+    // Valid boolean defaults
+    auto boolSchema = Schema.createPrimitive(Type.BOOLEAN);
+    assertNotThrown(validateDefault("e", boolSchema, JSONValue(true)));
+    assertNotThrown(validateDefault("e", boolSchema, JSONValue(false)));
+    assertThrown!AvroTypeException(validateDefault("e", boolSchema, JSONValue(1)));
+
+    // Valid null defaults
+    auto nullSchema = Schema.createPrimitive(Type.NULL);
+    assertNotThrown(validateDefault("f", nullSchema, JSONValue(null)));
+    assertThrown!AvroTypeException(validateDefault("f", nullSchema, JSONValue(1)));
+
+    // With arrays, defaults must match the array type.
+    auto arraySchema = new ArraySchema(Schema.createPrimitive(Type.INT));
+    assertNotThrown(validateDefault("g", arraySchema, JSONValue([3, 4])));
+    assertThrown!AvroTypeException(validateDefault("g", arraySchema, JSONValue(["a"])));
+    assertThrown!AvroTypeException(validateDefault("g", arraySchema, JSONValue("a")));
+
+    // With maps, defaults must match the value type.
+    auto mapSchema = new MapSchema(Schema.createPrimitive(Type.INT));
+    assertNotThrown(validateDefault("h", mapSchema, JSONValue(["a": 3])));
+    assertThrown!AvroTypeException(validateDefault("h", mapSchema, JSONValue([3, 4])));
+    assertThrown!AvroTypeException(validateDefault("h", mapSchema, JSONValue("a")));
+
+    // With unions, the default value must match the first type in the union.
+    auto unionSchema =
+        new UnionSchema([Schema.createPrimitive(Type.STRING), Schema.createPrimitive(Type.INT)]);
+    assertNotThrown(validateDefault("i", unionSchema, JSONValue("a")));
+    assertThrown!AvroTypeException(validateDefault("i", unionSchema, JSONValue(["a": 3])));
+    assertThrown!AvroTypeException(validateDefault("i", unionSchema, JSONValue(3)));
+
+    // With records, each field has its own schema-appropriate default.
+    auto recordSchema =
+        new RecordSchema(new Name("record", null), "", false, [
+            new Field("a", intSchema, "", JSONValue(3), true, Field.Order.IGNORE),
+            new Field("b", stringSchema, "", JSONValue("ab"), true, Field.Order.IGNORE)
+        ]);
+    assertNotThrown(validateDefault("i", recordSchema, parseJSON(`{"a": 3, "b": "ab"}`)));
+    assertThrown!AvroTypeException(
+        validateDefault("i", recordSchema, JSONValue(["a": "ab", "b": "ab"])));
+    assertThrown!AvroTypeException(validateDefault("i", recordSchema, JSONValue(3)));
+  }
+
+  private static bool isValidDefault(Schema schema, JSONValue defaultValue) {
+    switch (schema.getType()) {
+      case Type.STRING:
+      case Type.BYTES:
+      case Type.ENUM:
+      case Type.FIXED:
+        return defaultValue.type == JSONType.string;
+      case Type.INT:
+        return (defaultValue.type == JSONType.integer && defaultValue.integer < int.max)
+            || (defaultValue.type == JSONType.uinteger && defaultValue.uinteger < uint.max);
+      case Type.LONG:
+        return defaultValue.type == JSONType.integer || defaultValue.type == JSONType.uinteger;
+      case Type.FLOAT:
+      case Type.DOUBLE:
+        return defaultValue.type == JSONType.float_;
+      case Type.BOOLEAN:
+        return defaultValue.type == JSONType.true_ || defaultValue.type == JSONType.false_;
+      case Type.NULL:
+        return defaultValue.isNull();
+      case Type.ARRAY:
+        if (defaultValue.type != JSONType.array)
+          return false;
+        foreach (JSONValue element; defaultValue.array)
+          if (!isValidDefault(schema.getElementType(), element))
+            return false;
+        return true;
+      case Type.MAP:
+        if (defaultValue.type != JSONType.object)
+          return false;
+        foreach (JSONValue value; defaultValue.object)
+          if (!isValidDefault(schema.getValueType(), value))
+            return false;
+        return true;
+      case Type.UNION: // union default: first branch
+        return isValidDefault(schema.getTypes()[0], defaultValue);
+      case Type.RECORD:
+        if (defaultValue.type != JSONType.object)
+          return false;
+        foreach (Field field; schema.getFields()) {
+          if (!isValidDefault(
+                  field.schema,
+                  field.name in defaultValue.object
+                      ? defaultValue.object[field.name] : field.defaultValue))
+            return false;
+        }
+        return true;
+      default:
+        return false;
+    }
+  }
+
   /// Return the type of this schema.
   public Type getType() {
     return type;
@@ -112,7 +248,7 @@ public abstract class Schema {
   }
 
   /// If this is an enum, return a symbol's ordinal value.
-  public int getEnumOrdinal(string symbol) {
+  public size_t getEnumOrdinal(string symbol) {
     throw new AvroRuntimeException("Not an enum: " ~ this.toString);
   }
 
@@ -181,6 +317,11 @@ public abstract class Schema {
     throw new AvroRuntimeException("Not a union: " ~ this.toString);
   }
 
+  /// If this is a union, return the branch with the provided full name.
+  public size_t getIndexNamed(string name) {
+    throw new AvroRuntimeException("Not a union: " ~ this.toString);
+  }
+
   /// If this is fixed, returns its size.
   public size_t getFixedSize() {
     throw new AvroRuntimeException("Not fixed: " ~ this.toString);
@@ -194,10 +335,26 @@ package class NullSchema : Schema {
   }
 }
 
+unittest {
+  auto schema = new NullSchema();
+  assert(schema.getType() == Type.NULL);
+  assert(schema.getName() == "null");
+  assert(schema.getFullname() == "null");
+  assertThrown!AvroRuntimeException(schema.getField("a"));
+}
+
 package class BooleanSchema : Schema {
   this() {
     super(Type.BOOLEAN);
   }
+}
+
+unittest {
+  auto schema = new BooleanSchema();
+  assert(schema.getType() == Type.BOOLEAN);
+  assert(schema.getName() == "boolean");
+  assert(schema.getFullname() == "boolean");
+  assertThrown!AvroRuntimeException(schema.getField("a"));
 }
 
 package class IntSchema : Schema {
@@ -206,10 +363,26 @@ package class IntSchema : Schema {
   }
 }
 
+unittest {
+  auto schema = new IntSchema();
+  assert(schema.getType() == Type.INT);
+  assert(schema.getName() == "int");
+  assert(schema.getFullname() == "int");
+  assertThrown!AvroRuntimeException(schema.getField("a"));
+}
+
 package class LongSchema : Schema {
   this() {
     super(Type.LONG);
   }
+}
+
+unittest {
+  auto schema = new IntSchema();
+  assert(schema.getType() == Type.INT);
+  assert(schema.getName() == "int");
+  assert(schema.getFullname() == "int");
+  assertThrown!AvroRuntimeException(schema.getField("a"));
 }
 
 package class FloatSchema : Schema {
@@ -218,10 +391,26 @@ package class FloatSchema : Schema {
   }
 }
 
+unittest {
+  auto schema = new FloatSchema();
+  assert(schema.getType() == Type.FLOAT);
+  assert(schema.getName() == "float");
+  assert(schema.getFullname() == "float");
+  assertThrown!AvroRuntimeException(schema.getField("a"));
+}
+
 package class DoubleSchema : Schema {
   this() {
     super(Type.DOUBLE);
   }
+}
+
+unittest {
+  auto schema = new DoubleSchema();
+  assert(schema.getType() == Type.DOUBLE);
+  assert(schema.getName() == "double");
+  assert(schema.getFullname() == "double");
+  assertThrown!AvroRuntimeException(schema.getField("a"));
 }
 
 package class BytesSchema : Schema {
@@ -230,10 +419,26 @@ package class BytesSchema : Schema {
   }
 }
 
+unittest {
+  auto schema = new BytesSchema();
+  assert(schema.getType() == Type.BYTES);
+  assert(schema.getName() == "bytes");
+  assert(schema.getFullname() == "bytes");
+  assertThrown!AvroRuntimeException(schema.getField("a"));
+}
+
 package class StringSchema : Schema {
   this() {
     super(Type.STRING);
   }
+}
+
+unittest {
+  auto schema = new StringSchema();
+  assert(schema.getType() == Type.STRING);
+  assert(schema.getName() == "string");
+  assert(schema.getFullname() == "string");
+  assertThrown!AvroRuntimeException(schema.getField("a"));
 }
 
 /// Only certain schema types, like `record`, `enum`, and `fixed` have names and aliases.
@@ -331,6 +536,10 @@ package class RecordSchema : NamedSchema {
     }
     int i = 0;
     foreach (Field f; fields) {
+      if (f.position != -1) {
+        throw new AvroRuntimeException("Field already used: " ~ f.toString);
+      }
+      f.position = i++;
       if (f.name in _fieldMap) {
         throw new AvroRuntimeException(
             format("Duplicate field %s in record %s: %s and %s.",
@@ -346,6 +555,27 @@ package class RecordSchema : NamedSchema {
     return _isError;
   }
 }
+
+unittest {
+  auto schema = new RecordSchema(
+      new Name("fish", "com.example"),
+      "hello-doc",
+      false,
+      [
+          new Field("a", new IntSchema(), "", JSONValue(3), true, Field.Order.IGNORE),
+          new Field("b", new StringSchema(), "", JSONValue("ab"), true, Field.Order.IGNORE)
+      ]);
+  assert(schema.getType() == Type.RECORD);
+  assert(schema.getName() == "fish");
+  assert(schema.getFullname() == "com.example.fish");
+  assert(schema.isError() == false);
+  assert(schema.getFields().length == 2);
+  assert(schema.getField("a").getName() == "a");
+  assert(schema.getField("a").getPosition() == 0);
+  assert(schema.getField("b").getName() == "b");
+  assert(schema.getField("b").getPosition() == 1);
+}
+
 
 /**
    A schema that represents an enumerated list of specific valid values.
@@ -388,7 +618,7 @@ package class EnumSchema : NamedSchema {
   }
 
   override
-  public int getEnumOrdinal(string symbol) {
+  public size_t getEnumOrdinal(string symbol) {
     return ordinals[symbol];
   }
 
@@ -396,6 +626,26 @@ package class EnumSchema : NamedSchema {
   public string getEnumDefault() {
     return enumDefault;
   }
+}
+
+unittest {
+  auto schema = new EnumSchema(
+      new Name("employment", "com.example"), "ham", ["PART_TIME", "FULL_TIME"], "FULL_TIME");
+  assert(schema.getEnumSymbols() == ["PART_TIME", "FULL_TIME"]);
+  assert(schema.hasEnumSymbol("PART_TIME") == true);
+  assert(schema.hasEnumSymbol("QUASI_TIME") == false);
+  assert(schema.getEnumOrdinal("PART_TIME") == 0);
+  assert(schema.getEnumOrdinal("FULL_TIME") == 1);
+  assert(schema.getEnumDefault() == "FULL_TIME");
+}
+
+unittest {
+  // Invalid default.
+  assertThrown!SchemaParseException(new EnumSchema(
+      new Name("employment", "com.example"), "ham", ["PART_TIME", "FULL_TIME"], "QUASI_TIME"));
+  // Duplicate symbol.
+  assertThrown!SchemaParseException(new EnumSchema(
+      new Name("employment", "com.example"), "ham", ["PART_TIME", "PART_TIME"], "PART_TIME"));
 }
 
 /**
@@ -416,6 +666,14 @@ package class ArraySchema : Schema {
   }
 }
 
+unittest {
+  auto schema = new ArraySchema(Schema.createPrimitive(Type.INT));
+  assert(schema.getType() == Type.ARRAY);
+  assert(schema.getName() == "array");
+  assert(schema.getFullname() == "array");
+  assert(schema.getElementType().getType() == Type.INT);
+}
+
 /**
    An associative array mapping a string key to a value of a given schema type.
    See_Also: https://avro.apache.org/docs/current/spec.html#Maps
@@ -432,6 +690,14 @@ package class MapSchema : Schema {
   public Schema getValueType() {
     return valueType;
   }
+}
+
+unittest {
+  auto schema = new MapSchema(Schema.createPrimitive(Type.INT));
+  assert(schema.getType() == Type.MAP);
+  assert(schema.getName() == "map");
+  assert(schema.getFullname() == "map");
+  assert(schema.getValueType().getType() == Type.INT);
 }
 
 /**
@@ -466,6 +732,23 @@ package class UnionSchema : Schema {
   public Schema[] getTypes() {
     return types;
   }
+
+  override
+  public size_t getIndexNamed(string name) {
+    return indexByName[name];
+  }
+}
+
+unittest {
+  auto schema = new UnionSchema([
+      Schema.createPrimitive(Type.STRING),
+      Schema.createPrimitive(Type.INT)]);
+  assert(schema.getType() == Type.UNION);
+  assert(schema.getName() == "union");
+  assert(schema.getFullname() == "union");
+  assert(schema.getTypes().length == 2);
+  assert(schema.getIndexNamed("string") == 0);
+  assert(schema.getIndexNamed("int") == 1);
 }
 
 package class FixedSchema : NamedSchema {
@@ -480,4 +763,12 @@ package class FixedSchema : NamedSchema {
   public size_t getFixedSize() {
     return size;
   }
+}
+
+unittest {
+  auto schema = new FixedSchema(new Name("bob", "com.example"), "fixed doc", 10);
+  assert(schema.getType() == Type.FIXED);
+  assert(schema.getName() == "bob");
+  assert(schema.getFullname() == "com.example.bob");
+  assert(schema.getFixedSize() == 10);
 }
