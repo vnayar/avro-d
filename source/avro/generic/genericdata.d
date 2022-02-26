@@ -1,3 +1,4 @@
+/// Classes used to access generic Avro data using a schema without pre-compiled classes.
 module avro.generic.genericdata;
 
 import std.variant : Variant;
@@ -187,7 +188,7 @@ class GenericUnion : GenericContainer {
   /**
      Selects a new branch. The type for the value is changed accordingly.
      Params:
-       branch = The index for the selected branch.
+       index = The index for the selected branch.
   */
   void setUnionTypeIndex(size_t index) {
     if (unionTypeIndex != index) {
@@ -262,7 +263,7 @@ class GenericArray : GenericContainer {
   }
 
   /// Returns the contents of the array.
-  GenericDatum[] getValue() {
+  ref GenericDatum[] getValue() return {
     return value;
   }
 }

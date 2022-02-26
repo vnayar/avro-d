@@ -1,3 +1,4 @@
+/// Converts the text of an Avro schema into a validated data structure.
 module avro.parser;
 
 import std.conv : to;

@@ -1,3 +1,10 @@
+/**
+   A list of Avro schema types.
+
+   See_Also:
+   - [Primitive Types](https://avro.apache.org/docs/current/spec.html#schema_primitive)
+   - [Complex Types](https://avro.apache.org/docs/current/spec.html#schema_complex)
+ */
 module avro.type;
 
 /**
@@ -5,7 +12,7 @@ module avro.type;
    the same or different types.
 */
 public enum Type {
-  // [Primitive Types](https://avro.apache.org/docs/current/spec.html#schema_primitive)
+  /// [Primitive Types](https://avro.apache.org/docs/current/spec.html#schema_primitive)
   NULL,    /// no value
   BOOLEAN, /// a binary value
   INT,     /// 32-bit signed integer

@@ -1,3 +1,4 @@
+/// A hash-based map which also keeps track of insertion order.
 module avro.orderedmap;
 
 import core.exception : AssertError;

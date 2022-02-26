@@ -1,3 +1,4 @@
+/// A table of observed schemas organized by name, used during schema parsing.
 module avro.schematable;
 
 import avro.type : PRIMITIVE_TYPE_BY_NAME;

@@ -1,3 +1,4 @@
+/// Avro schemas are often identified by names, which are separated via namespaces.
 module avro.name;
 
 import avro.exception : SchemaParseException;

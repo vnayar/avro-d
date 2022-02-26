@@ -1,3 +1,4 @@
+/// Common logic needed for objects with attributes, like Schemas and Fields.
 module avro.attributes;
 
 /**

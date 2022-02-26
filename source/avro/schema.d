@@ -1,3 +1,4 @@
+/// Schemas describe the valid format of data, used for (en/de)coding, code generation, and more.
 module avro.schema;
 
 import std.conv : to;

@@ -1,3 +1,4 @@
+/// Avro related exception classes.
 module avro.exception;
 
 /// Base Avro exception.

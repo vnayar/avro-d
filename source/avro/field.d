@@ -1,3 +1,4 @@
+/// Avro fields that are part of an Avro record.
 module avro.field;
 
 import std.json : JSONValue, JSONType;
