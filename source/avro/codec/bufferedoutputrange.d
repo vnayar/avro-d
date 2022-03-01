@@ -1,3 +1,4 @@
+/// A wrapper around an Output Stream allowing values to buffer in memory before being flushed.
 module avro.codec.bufferedoutputrange;
 
 import std.range;
@@ -7,16 +8,12 @@ import std.traits;
 template ElementType(R)
 if (isFunction!(R.put))
 {
-  //pragma(msg, "---");
   static foreach (t; __traits(getOverloads, R, "put")) {
-    //pragma(msg, "Found put method, params=", Parameters!(t).length);
     static if (!is(done)) {
       static if (Parameters!(t).length == 1 && is(Parameters!(t)[0] T : T[])) {
-        //pragma(msg, "put for array found");
         alias ElementType = T;
         alias done = bool;
       } else static if (Parameters!(t).length == 1 && is(Parameters!(t)[0] T)) {
-        //pragma(msg, "put for single found");
         alias ElementType = T;
         alias done = bool;
       }
@@ -126,13 +123,14 @@ if (isOutputRange!(ORangeT, ElemT) && is(typeof(ORangeT.init.put([ ElemT.init ])
 /**
    A helper function to create a [BufferedOutputRange] with template types inferred from arguments.
    Params:
+     oRange  = The OutputRange capable of writing batches of elements, e.g. `.put(T[])`.
+     bufSize = The number of elements to buffer in memory before automatically flushing.
      ElemT   = The type of items that can be inserted as batches into ORangeT. This is
                automatically detected if ORangeT has put methods.
                Note: Automatic detection does not work for `std.array.appender.Appender`.
-     ORangeT = The OutputRange type capable of writing batches of elements, e.g. `.put(T[])`.
 */
 auto bufferedOutputRange(ElemT = ElementType!ORangeT, ORangeT)(
-    ORangeT oRange, size_t bufSize) {
+    ORangeT oRange, size_t bufSize = 512) {
   return BufferedOutputRange!(ORangeT, ElemT)(oRange, bufSize);
 }
 

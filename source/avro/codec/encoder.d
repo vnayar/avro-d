@@ -7,7 +7,7 @@ module avro.codec.encoder;
    This class has two types of methods. One type of methods support the writing
    of leaf values (for example, [Encoder.writeLong] and [Encoder.writeString]).
    These methods have analogs in [Decoder].
-   <p/>
+
    The other type of methods support the writing of maps and arrays. These
    methods are [Encoder.writeArrayStart], [Encoder.startItem], and
    [Encoder.writeArrayEnd] (and similar methods for maps). Some implementations
@@ -183,8 +183,8 @@ abstract class Encoder {
      foreach (string key, GenericRecord value; map) {
        out.startItem();
        out.writeString(key);
-       out.writeLong(value.getField("longField").getValue!long));
-       out.writeBoolean(value.getField("boolField").getValue!bool));
+       out.writeLong(value.getField("longField").getValue!long);
+       out.writeBoolean(value.getField("boolField").getValue!bool);
      }
      out.writeMapEnd();
      ```
@@ -211,14 +211,14 @@ abstract class Encoder {
      would look something like this:
 
      ```
-     out.writeIndex(1);
+     out.writeUnionIndex(1);
      out.writeLong(record.getField("longField").getValue!long);
      out.writeBoolean(record.getField("boolField").getValue!bool);
      ```
 
      Throws: AvroTypeException If this is a stateful writer and a map is not expected
   */
-  abstract void writeIndex(int unionIndex);
+  abstract void writeUnionIndex(int unionIndex);
 
   /// Empty any internal buffers to the underlying output.
   abstract void flush();
