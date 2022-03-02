@@ -4,7 +4,7 @@ module avro.codec.bufferedoutputrange;
 import std.range;
 import std.traits;
 
-// A specialization of std.range.ElementType which also considers output ranges.
+/// A specialization of std.range.ElementType which also considers output ranges.
 template ElementType(R)
 if (isFunction!(R.put))
 {
@@ -49,6 +49,10 @@ unittest {
   assert(is(ElementType!(Ham3!int) == int[]));
 }
 
+/// A narrowing of the definition of an output range to only those that could `put(ElemT[])`.
+enum bool isBlockOutputRange(ORangeT, ElemT) =
+    isOutputRange!(ORangeT, ElemT) && is(typeof(ORangeT.init.put([ ElemT.init ])));
+
 /**
    A buffering output range that writes to another output range in batches.
 
@@ -70,12 +74,13 @@ unittest {
      ElemT   = The type of items in the batch that can be written to ORangeT.
 */
 struct BufferedOutputRange(ORangeT, ElemT)
-if (isOutputRange!(ORangeT, ElemT) && is(typeof(ORangeT.init.put([ ElemT.init ]))))
+if (isBlockOutputRange!(ORangeT, ElemT))
 {
   private ORangeT oRange;
   private size_t bufSize;
   private ElemT[] buf;
 
+  /// Constructs a BufferedOutputRange which writes to `oRange` in batches up to `bufSize`.
   this(ORangeT oRange, size_t bufSize) {
     this.oRange = oRange;
     this.bufSize = bufSize;
