@@ -86,7 +86,7 @@ if (isBlockInputRange!(IRangeT, ElemT))
 }
 
 /// A convenience method for creating a [BufferedInputRange] with tempate arguments inferred.
-auto bufferedInputRange(ElemT = ElementType!(ElementType!IRangeT), IRangeT)(IRangeT iRange) {
+auto bufferedInputRange(IRangeT, ElemT = ElementType!(ElementType!IRangeT))(IRangeT iRange) {
   return BufferedInputRange!(IRangeT, ElemT)(iRange);
 }
 
@@ -97,7 +97,7 @@ unittest {
 
   int i = 1;
   auto bulkIRange = generate!(() => repeat(i++, 2)).take(3);
-  auto bufferedIRange = bufferedInputRange!int(bulkIRange);
+  auto bufferedIRange = bufferedInputRange(bulkIRange);
 
   assert(bufferedIRange.front == 1);
   assert(bufferedIRange.empty == false);

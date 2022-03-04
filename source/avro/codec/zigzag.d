@@ -32,6 +32,7 @@ long decodeZigzagLong(ulong input) nothrow pure {
   return cast(long)(((input >> 1) ^ -(cast(long)(input) & 1)));
 }
 
+///
 unittest {
   assert(decodeZigzagLong(0) == 0);
   assert(decodeZigzagLong(1) == -1);
@@ -49,6 +50,7 @@ uint encodeZigzagInt(int input) nothrow pure {
   return ((input << 1) ^ (input >> 31));
 }
 
+///
 unittest {
   assert(encodeZigzagInt(0) == 0);
   assert(encodeZigzagInt(-1) == 1);
@@ -63,6 +65,7 @@ int decodeZigzagInt(uint input) nothrow pure {
   return cast(int)(((input >> 1) ^ -(cast(int)(input) & 1)));
 }
 
+///
 unittest {
   assert(decodeZigzagInt(0) == 0);
   assert(decodeZigzagInt(1) == -1);
@@ -89,6 +92,7 @@ size_t encodeLong(long input, ref ubyte[10] output) nothrow {
   return bytesOut;
 }
 
+///
 unittest {
   ubyte[12] bytes;
   size_t n;
@@ -119,7 +123,7 @@ unittest {
 }
 
 /// Encodes an int into a variable number of bytes in a given buffer.
-size_t encodeInt(int input, ref ubyte[5] output) /*nothrow*/ {
+size_t encodeInt(int input, ref ubyte[5] output) nothrow {
   uint val = encodeZigzagInt(input);
 
   // put values in an array of bytes with variable length encoding
@@ -134,6 +138,7 @@ size_t encodeInt(int input, ref ubyte[5] output) /*nothrow*/ {
   return bytesOut;
 }
 
+///
 unittest {
   ubyte[12] bytes;
   size_t n;

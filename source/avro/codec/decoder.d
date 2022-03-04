@@ -89,7 +89,7 @@ abstract class Decoder {
      Throws: AvroTypeException If this is a stateful reader and byte-string is not
      the type of the next value to be read
   */
-  abstract ubyte[] readBytes(ubyte[] old);
+  abstract ubyte[] readBytes();
 
   /**
      Discards a byte-string written by [Encoder.writeBytes].
@@ -103,28 +103,15 @@ abstract class Decoder {
      Reads fixed sized binary object.
 
      Params:
-       bytes  = The buffer to store the contents being read.
-       start  = The position where the data needs to be written.
        length = The size of the binary object.
      Throws:
      - AvroTypeException If this is a stateful reader and fixed sized binary
        object is not the type of the next value to be read
        or the length is incorrect.
      - IOException
+     Returns: The fixed size binary object.
   */
-  abstract void readFixed(ubyte[] bytes, size_t start, size_t length);
-
-  /**
-     A shorthand for `readFixed(bytes, 0, bytes.length)`.
-
-     Throws:
-     - AvroTypeException If this is a stateful reader and fixed sized binary
-     object is not the type of the next value to be read or the length is incorrect.
-     - IOException
-  */
-  void readFixed(ubyte[] bytes) {
-    readFixed(bytes, 0, bytes.length);
-  }
+  abstract ubyte[] readFixed(size_t length);
 
   /**
      Discards fixed sized binary object.
@@ -168,7 +155,7 @@ abstract class Decoder {
      Throws: AvroTypeException If this is a stateful reader and array is not the
      type of the next value to be read
   */
-  abstract long readArrayStart();
+  abstract size_t readArrayStart();
 
   /**
      Processes the next block of an array and returns the number of items in the
@@ -176,7 +163,7 @@ abstract class Decoder {
 
      Throws: AvroTypeException When called outside of an array context
   */
-  abstract long arrayNext();
+  abstract size_t arrayNext();
 
   /**
      Used for quickly skipping through an array. Note you can either skip the
@@ -230,7 +217,7 @@ abstract class Decoder {
     Throws: AvroTypeException If this is a stateful reader and map is not the
     type of the next value to be read
    */
-  abstract long readMapStart();
+  abstract size_t readMapStart();
 
   /**
      Processes the next block of map entries and returns the count of them.
@@ -238,7 +225,7 @@ abstract class Decoder {
 
      Throws: AvroTypeException When called outside of a map context
   */
-  abstract long mapNext();
+  abstract size_t mapNext();
 
   /**
      Support for quickly skipping through a map similar to [skipArray].
@@ -260,7 +247,7 @@ abstract class Decoder {
      Throws: AvroTypeException If this is a stateful reader and array is not the
      type of the next value to be read
   */
-  abstract long skipMap();
+  abstract size_t skipMap();
 
   /**
      Reads the tag of a union written by [Encoder.writeIndex].
@@ -268,6 +255,6 @@ abstract class Decoder {
      Throws: AvroTypeException If this is a stateful reader and union is not the
      type of the next value to be read
   */
-  abstract int readIndex();
+  abstract int readUnionIndex();
 }
 

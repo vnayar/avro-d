@@ -100,13 +100,12 @@ if (isOutputRange!(ORangeT, ubyte))
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
     with (encoder) {
-      writeFloat(23.213121412);
+      // double accomodates 6-9 decimal digits
+      writeFloat(23.2131);
       // Bytes according to IEEE-754 from least to most significant.
-      assert(data == [0x79, 0xb4, 0xb9, 0x41]);
-      writeFloat(-2423789437841.12112);
-      assert(data == [
-              0x79, 0xb4, 0xb9, 0x41,
-              0x47, 0x15, 0x0d, 0xd4]);
+      assert(data == [0x6e, 0xb4, 0xb9, 0x41]);
+      writeFloat(-76.8129);
+      assert(data == [0x6e, 0xb4, 0xb9, 0x41, 0x34, 0xa0, 0x99, 0xc2]);
     }
   }
 
@@ -124,6 +123,7 @@ if (isOutputRange!(ORangeT, ubyte))
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
     with (encoder) {
+      // double accomodates 15-16 decimal digits
       writeDouble(8329242423.24324);
       // Bytes according to IEEE-754 from least to most significant.
       assert(data == [0x50, 0xE4, 0x73, 0x73, 0x62, 0x07, 0xFF, 0x41]);
