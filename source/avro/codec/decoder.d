@@ -136,7 +136,7 @@ abstract class Decoder {
        the type of the next value to be read.
      - IOException
   */
-  abstract int readEnum();
+  abstract size_t readEnum();
 
   /**
      Reads and returns the size of the first block of an array. If this method
@@ -255,6 +255,6 @@ abstract class Decoder {
      Throws: AvroTypeException If this is a stateful reader and union is not the
      type of the next value to be read
   */
-  abstract int readUnionIndex();
+  abstract size_t readUnionIndex();
 }
 

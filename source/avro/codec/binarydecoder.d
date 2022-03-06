@@ -243,7 +243,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
 
   /// See_Also: [readInt]
   override
-  int readEnum() {
+  size_t readEnum() {
     return readInt();
   }
 
@@ -366,7 +366,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
 
   /// See_Also: [readInt]
   override
-  int readUnionIndex() {
+  size_t readUnionIndex() {
     return readInt();
   }
 

@@ -208,8 +208,8 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   override
-  void writeEnum(int e) {
-    writeInt(e);
+  void writeEnum(size_t e) {
+    writeInt(e.to!int);
   }
 
   ///
@@ -309,8 +309,8 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   override
-  void writeUnionIndex(int unionIndex) {
-    writeInt(unionIndex);
+  void writeUnionIndex(size_t unionIndex) {
+    writeInt(unionIndex.to!int);
   }
 
   override

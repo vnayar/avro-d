@@ -111,7 +111,9 @@ class GenericDatum {
   }
 
   public inout(Type) getType() inout {
-    return type;
+    return type == Type.UNION
+        ? value.get!(GenericUnion).getDatum().getType()
+        : type;
   }
 
   /**
@@ -120,7 +122,37 @@ class GenericDatum {
        T = The type of the value, which much correspond to the Avro type returned by [getType()].
   */
   public inout(T) getValue(T)() inout {
-    return value.get!T;
+    return type == Type.UNION
+        ? value.get!(GenericUnion).getDatum().getValue!T()
+        : value.get!T;
+  }
+
+  /**
+     Sets the value of the GenericDatum to a value corresponding with its type.
+
+     Throws: VariantException when the value type does not match the datum type.
+  */
+  public void setValue(T)(T val) {
+    if (type == Type.UNION) {
+      value.get!(GenericUnion).getDatum().setValue(val);
+    } else {
+      value = val;
+    }
+  }
+
+  /// ditto
+  public void opAssign(T)(T val)
+  if (!is(T : GenericDatum)) {
+    setValue(val);
+  }
+
+  /// For records/maps, looks up a record with [name].
+  GenericDatum opIndex(string name) {
+    if (type == Type.RECORD) {
+      return value.get!(GenericRecord)[name];
+    } else {
+      throw new AvroRuntimeException("Cannot use [string] operator for type " ~ type.to!string);
+    }
   }
 
   /// Returns true if an only if this datum is a union.
@@ -129,13 +161,17 @@ class GenericDatum {
   }
 
   /// Returns the index of the current branch, if this is a union.
-  size_t getUnionTypeIndex() {
-    return value.get!GenericUnion().getUnionTypeIndex();
+  size_t getUnionIndex()
+  in (isUnion(), "Cannot get union index on type: " ~ type.to!string)
+  {
+    return value.get!GenericUnion().getUnionIndex();
   }
 
   /// Selects a new branch in the union if this is a union.
-  void setUnionTypeIndex(size_t branch) {
-    value.get!GenericUnion().setUnionTypeIndex(branch);
+  void setUnionIndex(size_t branch)
+  in (isUnion(), "Cannot set union index on type: " ~ type.to!string)
+  {
+    value.get!GenericUnion().setUnionIndex(branch);
   }
 }
 
@@ -168,7 +204,7 @@ class GenericContainer {
    may contain the datum `3` or `"apple"` but not both.
 */
 class GenericUnion : GenericContainer {
-  private size_t unionTypeIndex;
+  private int unionIndex;
   private GenericDatum datum;
 
   /**
@@ -177,12 +213,12 @@ class GenericUnion : GenericContainer {
   */
   this(Schema schema) {
     super(Type.UNION, schema);
-    setUnionTypeIndex(0);
+    setUnionIndex(0);
   }
 
   /// Returns the index of the current branch.
-  size_t getUnionTypeIndex() {
-    return unionTypeIndex;
+  size_t getUnionIndex() {
+    return unionIndex;
   }
 
   /**
@@ -190,15 +226,15 @@ class GenericUnion : GenericContainer {
      Params:
        index = The index for the selected branch.
   */
-  void setUnionTypeIndex(size_t index) {
-    if (unionTypeIndex != index) {
+  void setUnionIndex(size_t index) {
+    if (unionIndex != index || datum is null) {
       datum = new GenericDatum(getSchema().getTypes()[index]);
-      unionTypeIndex = index;
+      unionIndex = index.to!int;
     }
   }
 
   /// Returns the datum corresponding to the currently selected union type.
-  GenericDatum getDatum() {
+  inout(GenericDatum) getDatum() inout {
     return datum;
   }
 }
@@ -240,6 +276,11 @@ class GenericRecord : GenericContainer {
   /// Returns the field data with the given name.
   GenericDatum getField(string name) {
     return fieldAt(fieldIndex(name));
+  }
+
+  /// ditto
+  GenericDatum opIndex(string name) {
+    return getField(name);
   }
 
   /// Returns the field data at the given position.

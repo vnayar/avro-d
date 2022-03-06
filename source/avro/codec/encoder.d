@@ -108,7 +108,7 @@ abstract class Encoder {
     Throws: AvroTypeException If this is a stateful writer and an enumeration is not expected or the
         `e` is out of range.
    */
-  abstract void writeEnum(int e);
+  abstract void writeEnum(size_t e);
 
   /**
     Call this method to start writing an array.
@@ -218,7 +218,7 @@ abstract class Encoder {
 
      Throws: AvroTypeException If this is a stateful writer and a map is not expected
   */
-  abstract void writeUnionIndex(int unionIndex);
+  abstract void writeUnionIndex(size_t unionIndex);
 
   /// Empty any internal buffers to the underlying output.
   abstract void flush();
