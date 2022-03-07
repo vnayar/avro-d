@@ -1,7 +1,7 @@
 /// Classes used to access generic Avro data using a schema without pre-compiled classes.
 module avro.generic.genericdata;
 
-import std.variant : Variant;
+import std.variant : Variant, VariantException;
 import std.conv : to;
 
 import avro.type : Type;
@@ -127,6 +127,11 @@ class GenericDatum {
         : value.get!T;
   }
 
+  /// Implementing opCast allows values to be retrieved using `std.conv.to`.
+  public inout(T) opCast(T)() inout {
+    return getValue!T();
+  }
+
   /**
      Sets the value of the GenericDatum to a value corresponding with its type.
 
@@ -172,6 +177,28 @@ class GenericDatum {
   in (isUnion(), "Cannot set union index on type: " ~ type.to!string)
   {
     value.get!GenericUnion().setUnionIndex(branch);
+  }
+
+  override
+  string toString() const {
+    switch (type) {
+      case Type.NULL:
+        return "null";
+      case Type.BOOLEAN:
+        return getValue!bool() ? "true" : "false";
+      case Type.INT:
+        return getValue!int().to!string();
+      case Type.LONG:
+        return getValue!long().to!string();
+      case Type.FLOAT:
+        return getValue!float().to!string();
+      case Type.DOUBLE:
+        return getValue!double().to!string();
+      case Type.STRING:
+        return "\"" ~ getValue!string() ~ "\"";
+      default:
+        return this.classinfo.name;
+    }
   }
 }
 

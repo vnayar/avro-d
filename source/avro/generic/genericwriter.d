@@ -9,11 +9,12 @@ import avro.schema : Schema;
 import avro.codec.datumwriter : DatumWriter;
 import avro.codec.encoder : Encoder;
 
-/// [DatumWriter] for generic Java objects.
+/// [DatumWriter] for GenericDatum objects.
 class GenericWriter {
   private Schema schema;
   private Encoder encoder;
 
+  /// Uses a given encoder to convert a [GenericDatum] into its serialized format.
   static void write(GenericDatum datum, Encoder e) {
     if (datum.isUnion()) {
       e.writeUnionIndex(datum.getUnionIndex());
@@ -99,7 +100,6 @@ class GenericWriter {
 
 ///
 unittest {
-  import std.stdio;
   import std.array : appender;
   import avro.parser : Parser;
   import avro.codec.binaryencoder;

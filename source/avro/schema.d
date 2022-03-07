@@ -173,14 +173,14 @@ public abstract class Schema {
         if (defaultValue.type != JSONType.array)
           return false;
         foreach (JSONValue element; defaultValue.array)
-          if (!isValidDefault(schema.getElementType(), element))
+          if (!isValidDefault(schema.getElementSchema(), element))
             return false;
         return true;
       case Type.MAP:
         if (defaultValue.type != JSONType.object)
           return false;
         foreach (JSONValue value; defaultValue.object)
-          if (!isValidDefault(schema.getValueType(), value))
+          if (!isValidDefault(schema.getValueSchema(), value))
             return false;
         return true;
       case Type.UNION: // union default: first branch
@@ -304,12 +304,12 @@ public abstract class Schema {
   }
 
   /// If this is an array, returns its element type.
-  public Schema getElementType() {
+  public Schema getElementSchema() {
     throw new AvroRuntimeException("Not an array: " ~ this.toString);
   }
 
   /// If this is a map, returns its value type.
-  public Schema getValueType() {
+  public Schema getValueSchema() {
     throw new AvroRuntimeException("Not a map: " ~ this.toString);
   }
 
@@ -662,7 +662,7 @@ package class ArraySchema : Schema {
   }
 
   override
-  public Schema getElementType() {
+  public Schema getElementSchema() {
     return elementType;
   }
 }
@@ -672,7 +672,7 @@ unittest {
   assert(schema.getType() == Type.ARRAY);
   assert(schema.getName() == "array");
   assert(schema.getFullname() == "array");
-  assert(schema.getElementType().getType() == Type.INT);
+  assert(schema.getElementSchema().getType() == Type.INT);
 }
 
 /**
@@ -688,7 +688,7 @@ package class MapSchema : Schema {
   }
 
   override
-  public Schema getValueType() {
+  public Schema getValueSchema() {
     return valueType;
   }
 }
@@ -698,7 +698,7 @@ unittest {
   assert(schema.getType() == Type.MAP);
   assert(schema.getName() == "map");
   assert(schema.getFullname() == "map");
-  assert(schema.getValueType().getType() == Type.INT);
+  assert(schema.getValueSchema().getType() == Type.INT);
 }
 
 /**
