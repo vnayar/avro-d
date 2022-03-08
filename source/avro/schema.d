@@ -150,7 +150,7 @@ public abstract class Schema {
     assertThrown!AvroTypeException(validateDefault("i", recordSchema, JSONValue(3)));
   }
 
-  private static bool isValidDefault(Schema schema, JSONValue defaultValue) {
+  private static bool isValidDefault(const Schema schema, JSONValue defaultValue) {
     switch (schema.getType()) {
       case Type.STRING:
       case Type.BYTES:
@@ -188,7 +188,7 @@ public abstract class Schema {
       case Type.RECORD:
         if (defaultValue.type != JSONType.object)
           return false;
-        foreach (Field field; schema.getFields()) {
+        foreach (const Field field; schema.getFields()) {
           if (!isValidDefault(
                   field.schema,
                   field.name in defaultValue.object
@@ -202,7 +202,7 @@ public abstract class Schema {
   }
 
   /// Return the type of this schema.
-  public Type getType() {
+  public Type getType() const {
     return type;
   }
 
@@ -210,7 +210,7 @@ public abstract class Schema {
      Return the logical type, which can be combined with a type for special interpretation,
      like a timestamp or a date.
   */
-  public string getLogicalType() {
+  public string getLogicalType() const {
     return logicalType;
   }
 
@@ -218,7 +218,7 @@ public abstract class Schema {
     If this is a record, returns the Field with the given name [fieldName]. If there is no field by
     that name, a [null] is returned.
   */
-  public Field getField(string fieldName) {
+  public const(Field) getField(string fieldName) const {
     throw new AvroRuntimeException("Not a record: " ~ this.toString);
   }
 
@@ -226,7 +226,7 @@ public abstract class Schema {
     If this is a record, returns the fields in it. The returned list is in the order of their
     positions.
   */
-  public Field[] getFields() {
+  public const(Field[]) getFields() const {
     throw new AvroRuntimeException("Not a record: " ~ this.toString);
   }
 
@@ -239,7 +239,7 @@ public abstract class Schema {
   }
 
   /// If this is an enum, return its symbols.
-  public string[] getEnumSymbols() {
+  public const(string[]) getEnumSymbols() const {
     throw new AvroRuntimeException("Not an enum: " ~ this.toString);
   }
 
@@ -249,12 +249,12 @@ public abstract class Schema {
   }
 
   /// If this is an enum, return a symbol's ordinal value.
-  public size_t getEnumOrdinal(string symbol) {
+  public size_t getEnumOrdinal(string symbol) const {
     throw new AvroRuntimeException("Not an enum: " ~ this.toString);
   }
 
   /// If this is an enum, returns true if it contains given symbol.
-  public bool hasEnumSymbol(string symbol) {
+  public bool hasEnumSymbol(string symbol) const {
     throw new AvroRuntimeException("Not an enum: " ~ this.toString);
   }
 
@@ -304,17 +304,17 @@ public abstract class Schema {
   }
 
   /// If this is an array, returns its element type.
-  public Schema getElementSchema() {
+  public const(Schema) getElementSchema() const {
     throw new AvroRuntimeException("Not an array: " ~ this.toString);
   }
 
   /// If this is a map, returns its value type.
-  public Schema getValueSchema() {
+  public const(Schema) getValueSchema() const {
     throw new AvroRuntimeException("Not a map: " ~ this.toString);
   }
 
   /// If this is a union, returns its types.
-  public Schema[] getTypes() {
+  public const(Schema[]) getTypes() const {
     throw new AvroRuntimeException("Not a union: " ~ this.toString);
   }
 
@@ -324,10 +324,14 @@ public abstract class Schema {
   }
 
   /// If this is fixed, returns its size.
-  public size_t getFixedSize() {
+  public size_t getFixedSize() const {
     throw new AvroRuntimeException("Not fixed: " ~ this.toString);
   }
 
+  override
+  public string toString() const {
+    return typeid(typeof(this)).stringof;
+  }
 }
 
 package class NullSchema : Schema {
@@ -520,12 +524,12 @@ package class RecordSchema : NamedSchema {
   }
 
   override
-  public Field getField(string fieldname) {
+  public const(Field) getField(string fieldname) const {
     return _fieldMap.get(fieldname, null);
   }
 
   override
-  public Field[] getFields() {
+  public const(Field[]) getFields() const {
     return _fields;
   }
 
@@ -609,17 +613,17 @@ package class EnumSchema : NamedSchema {
   }
 
   override
-  public string[] getEnumSymbols() {
+  public const(string[]) getEnumSymbols() const {
     return symbols;
   }
 
   override
-  public bool hasEnumSymbol(string symbol) {
+  public bool hasEnumSymbol(string symbol) const {
     return (symbol in ordinals) != null;
   }
 
   override
-  public size_t getEnumOrdinal(string symbol) {
+  public size_t getEnumOrdinal(string symbol) const {
     return ordinals[symbol];
   }
 
@@ -662,7 +666,7 @@ package class ArraySchema : Schema {
   }
 
   override
-  public Schema getElementSchema() {
+  public const(Schema) getElementSchema() const {
     return elementType;
   }
 }
@@ -688,7 +692,7 @@ package class MapSchema : Schema {
   }
 
   override
-  public Schema getValueSchema() {
+  public const(Schema) getValueSchema() const {
     return valueType;
   }
 }
@@ -730,7 +734,7 @@ package class UnionSchema : Schema {
   }
 
   override
-  public Schema[] getTypes() {
+  public const(Schema[]) getTypes() const {
     return types;
   }
 
@@ -761,7 +765,7 @@ package class FixedSchema : NamedSchema {
   }
 
   override
-  public size_t getFixedSize() {
+  public size_t getFixedSize() const {
     return size;
   }
 }

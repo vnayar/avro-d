@@ -64,7 +64,7 @@ class Parser {
 }
 EOS");
     assert(schema.getType() == Type.RECORD);
-    Field[] fields = schema.getFields();
+    auto fields = schema.getFields();
     assert(schema.getName() == "User");
     assert(schema.getNamespace() == "example.avro");
     assert(schema.getFullname() == "example.avro.User");
@@ -187,7 +187,7 @@ EOS");
         JSONValue sizeNode = "size" in jsonSchema ? jsonSchema["size"] : JSONValue(null);
         if (sizeNode.isNull || sizeNode.type != JSONType.integer)
           throw new SchemaParseException("invalid or no size: " ~ jsonSchema.toString);
-        result = new FixedSchema(name, doc, sizeNode.uinteger);
+        result = new FixedSchema(name, doc, sizeNode.integer);
         if (name !is null)
           schemaTable.addSchema(result);
       } else { // for unions with self reference

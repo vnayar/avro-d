@@ -65,7 +65,7 @@ class GenericReader {
       case Type.ARRAY:
         auto v = datum.getValue!GenericArray();
         GenericDatum[] arr = v.getValue();
-        Schema elemSchema = v.getSchema().getElementSchema();
+        const(Schema) elemSchema = v.getSchema().getElementSchema();
         arr.length = 0;
         size_t start = 0;
         for (size_t m = d.readArrayStart(); m != 0; m = d.arrayNext()) {
@@ -79,7 +79,7 @@ class GenericReader {
       case Type.MAP:
         auto v = datum.getValue!GenericMap();
         GenericDatum[string] r = v.getValue();
-        Schema valueSchema = v.getSchema().getValueSchema();
+        const(Schema) valueSchema = v.getSchema().getValueSchema();
         r.clear();
         size_t start = 0;
         for (size_t m = d.readMapStart(); m != 0; m = d.mapNext()) {

@@ -1,6 +1,7 @@
 /// Classes used to access generic Avro data using a schema without pre-compiled classes.
 module avro.generic.genericdata;
 
+import std.traits;
 import std.variant : Variant, VariantException;
 import std.conv : to;
 
@@ -32,7 +33,7 @@ class GenericDatum {
   // TODO: Add logical type.
   private Variant value;
 
-  private void initFromSchema(Schema schema) {
+  private void initFromSchema(const Schema schema) {
     type = schema.getType();
     final switch (type) {
       case Type.NULL:
@@ -84,30 +85,32 @@ class GenericDatum {
     this.type = Type.NULL;
   }
 
+  public this(const Schema schema) {
+    initFromSchema(schema);
+  }
+
   /// A constructor allowing GenericDatum to be created for primitive schemas from D equivalents.
-  public this(T)(T value) {
-    static if (is(T == bool)) {
+  public this(T)(T val)
+  if (!is(T : Schema))
+  {
+    this.value = val;
+    static if (is(T : bool)) {
       this.type = Type.BOOLEAN;
-    } else if (is(T == int)) {
+    } else static if (is(T : int)) {
       this.type = Type.INT;
-    } else if (is(T == long)) {
+    } else static if (is(T : long)) {
       this.type = Type.LONG;
-    } else if (is(T == float)) {
+    } else static if (is(T : float)) {
       this.type = Type.FLOAT;
-    } else if (is(T == double)) {
+    } else static if (is(T : double)) {
       this.type = Type.DOUBLE;
-    } else if (is(T == string)) {
+    } else static if (is(T : string)) {
       this.type = Type.STRING;
-    } else if (is(T == ubyte[])) {
+    } else static if (is(T : ubyte[])) {
       this.type = Type.BYTES;
     } else {
       assert(false, "Cannot create primitive GenericDatum from type: " ~ typeid(T).toString);
     }
-    this.value = value;
-  }
-
-  public this(Schema schema) {
-    initFromSchema(schema);
   }
 
   public inout(Type) getType() inout {
@@ -151,12 +154,59 @@ class GenericDatum {
     setValue(val);
   }
 
-  /// For records/maps, looks up a record with [name].
-  GenericDatum opIndex(string name) {
-    if (type == Type.RECORD) {
-      return value.get!(GenericRecord)[name];
+  void opOpAssign(string op, T)(T val)
+  if (op == "~" && (isBasicType!T || isSomeString!T))
+  {
+    if (type == Type.ARRAY) {
+      static if (isBasicType!T || isSomeString!T) {
+        value.get!(GenericArray).getValue() ~= new GenericDatum(val);
+      } else {
+        value.get!(GenericArray).getValue() ~= val;
+      }
     } else {
-      throw new AvroRuntimeException("Cannot use [string] operator for type " ~ type.to!string);
+      throw new AvroRuntimeException("Cannot use ~= operator for type " ~ type.to!string);
+    }
+  }
+
+  /// For records/maps, looks up a record with `name`.
+  ref inout(GenericDatum) opIndex(string name) inout {
+    if (type == Type.RECORD) {
+      return (value.get!(GenericRecord))[name];
+    } else if (type == Type.MAP) {
+      return (value.get!(GenericMap))[name];
+    } else {
+      // Bug with std.conv:to and inout, See https://issues.dlang.org/show_bug.cgi?id=20623
+      throw new AvroRuntimeException("Only RECORD and MAP types can use the [string] operator.");
+    }
+  }
+
+  /// For records/maps, looks up a record with `name`.
+  ref inout(GenericDatum) opIndex(int idx) inout {
+    if (type == Type.ARRAY) {
+      return value.get!(GenericArray)[idx];
+    } else {
+      throw new AvroRuntimeException("Only ARRAY types can use the [int] operator.");
+    }
+  }
+
+  /// For records/maps, assign a value to a given key.
+  void opIndexAssign(T)(T val, string name) {
+    if (type == Type.RECORD) {
+      (value.get!GenericRecord)[name] = val;
+    } else if (type == Type.MAP) {
+      (value.get!GenericMap)[name] = val;
+    } else {
+      throw new AvroRuntimeException("Cannot use [string] assignment for type " ~ type.to!string);
+    }
+
+  }
+
+  /// For arrays, assign a value to a given index.
+  void opIndexAssign(T)(T val, int idx) {
+    if (type == Type.ARRAY) {
+      value.get!(GenericArray)[idx] = val;
+    } else {
+      throw new AvroRuntimeException("Cannot use [string] assignment for type " ~ type.to!string);
     }
   }
 
@@ -204,21 +254,21 @@ class GenericDatum {
 
 /// The base class for all generic types that act as containers.
 class GenericContainer {
-  private Schema schema;
+  private const(Schema) schema;
 
   /// Validates that a given schema is of the expected type.
-  private void assertType(Schema schema, Type type) {
+  private void assertType(const Schema schema, Type type) {
     if (schema.getType() != type) {
       throw new AvroRuntimeException("Schema has type " ~ schema.getType().to!string
           ~ ", but expected type " ~ type.to!string);
     }
   }
-  protected this(Type type, Schema schema) {
+  protected this(Type type, const Schema schema) {
     this.schema = schema;
     assertType(schema, type);
   }
 
-  public Schema getSchema() {
+  public const(Schema) getSchema() const {
     return schema;
   }
 }
@@ -238,7 +288,7 @@ class GenericUnion : GenericContainer {
      Constructs a generic union corresponding to the given schema and the given value. The schema
      should be of Avro type union and the value should correspond to one of the union types.
   */
-  this(Schema schema) {
+  this(const Schema schema) {
     super(Type.UNION, schema);
     setUnionIndex(0);
   }
@@ -271,11 +321,11 @@ class GenericRecord : GenericContainer {
   private GenericDatum[] fieldData;
 
   /// Constructs a generic record corresponding to the given "record" type schema.
-  this(Schema schema) {
+  this(const Schema schema) {
     super(Type.RECORD, schema);
-    Field[] schemaFields = schema.getFields();
+    const(Field[]) schemaFields = schema.getFields();
     fieldData.length = schemaFields.length;
-    foreach (size_t i, Field field; schemaFields) {
+    foreach (size_t i, const(Field) field; schemaFields) {
       fieldData[i] = new GenericDatum(field.getSchema());
     }
   }
@@ -286,9 +336,9 @@ class GenericRecord : GenericContainer {
   }
 
   /// Returns index of the field with the given name.
-  size_t fieldIndex(string name) {
+  size_t fieldIndex(string name) const {
     size_t index = 0;
-    Field field = getSchema().getField(name);
+    auto field = getSchema().getField(name);
     if (field is null) {
       throw new AvroRuntimeException("Invalid field name: " ~ name);
     }
@@ -301,17 +351,17 @@ class GenericRecord : GenericContainer {
   }
 
   /// Returns the field data with the given name.
-  GenericDatum getField(string name) {
+  ref inout(GenericDatum) getField(string name) inout {
     return fieldAt(fieldIndex(name));
   }
 
   /// ditto
-  GenericDatum opIndex(string name) {
+  ref inout(GenericDatum) opIndex(string name) inout {
     return getField(name);
   }
 
   /// Returns the field data at the given position.
-  GenericDatum fieldAt(size_t pos) {
+  ref inout(GenericDatum) fieldAt(size_t pos) inout {
     return fieldData[pos];
   }
 
@@ -326,7 +376,7 @@ class GenericArray : GenericContainer {
   private GenericDatum[] value;
 
   /// Constructs a generic array according to the given array-type schema.
-  this(Schema schema) {
+  this(const Schema schema) {
     super(Type.ARRAY, schema);
   }
 
@@ -334,6 +384,16 @@ class GenericArray : GenericContainer {
   ref GenericDatum[] getValue() return {
     return value;
   }
+
+  ref inout(GenericDatum) opIndex(int idx) inout {
+    return value[idx];
+  }
+
+  void opIndexAssign(T)(T val, int idx)
+  if (isBasicType!T || isSomeString!T) {
+    value[idx] = new GenericDatum(val);
+  }
+
 }
 
 /// A generic container for Avro maps.
@@ -341,7 +401,7 @@ class GenericMap : GenericContainer {
   private GenericDatum[string] value;
 
   /// Constructs a generic map according to the given map-type schema.
-  this(Schema schema) {
+  this(const Schema schema) {
     super(Type.MAP, schema);
   }
 
@@ -349,24 +409,33 @@ class GenericMap : GenericContainer {
   GenericDatum[string] getValue() {
     return value;
   }
+
+  ref inout(GenericDatum) opIndex(string name) inout {
+    return value[name];
+  }
+
+  void opIndexAssign(T)(T val, string name)
+  if (isBasicType!T || isSomeString!T) {
+    value[name] = new GenericDatum(val);
+  }
 }
 
 /// A generic container for Avro enums.
 class GenericEnum : GenericContainer {
   private size_t value;
 
-  private size_t getEnumOrdinal(Schema schema, string symbol) {
+  private size_t getEnumOrdinal(const Schema schema, string symbol) {
     if (getSchema().hasEnumSymbol(symbol))
       return getSchema().getEnumOrdinal(symbol);
     throw new AvroRuntimeException("No such symbol: " ~ symbol);
   }
 
   /// Constructs a generic enum according to the given enum-type schema.
-  this(Schema schema) {
+  this(const Schema schema) {
     super(Type.ENUM, schema);
   }
 
-  this(Schema schema, string symbol) {
+  this(const Schema schema, string symbol) {
     this(schema);
     value = GenericEnum.getEnumOrdinal(schema, symbol);
   }
@@ -376,7 +445,7 @@ class GenericEnum : GenericContainer {
      Throws: AvroRuntimeException if the enum has no such ordinal.
   */
   string getSymbol(size_t n) {
-    string[] symbols = getSchema().getEnumSymbols();
+    const(string[]) symbols = getSchema().getEnumSymbols();
     if (n < symbols.length) {
       return symbols[n];
     }
@@ -412,7 +481,7 @@ class GenericEnum : GenericContainer {
 
   /// Returns the symbol for the current value of this enum.
   string getSymbol() {
-    string[] symbols = getSchema().getEnumSymbols();
+    const(string[]) symbols = getSchema().getEnumSymbols();
     return symbols[value];
   }
 }
@@ -422,17 +491,21 @@ class GenericFixed : GenericContainer {
   private ubyte[] value;
 
   /// Constructs a generic fixed value according to the given fixed-type Avro schema.
-  this(Schema schema) {
+  this(const Schema schema) {
     super(Type.FIXED, schema);
     value.length = schema.getFixedSize();
   }
 
-  this(Schema schema, ubyte[] v) {
+  this(const Schema schema, ubyte[] v) {
     this(schema);
     value = v;
   }
 
-  ubyte[] getValue() {
+  ref inout(ubyte[]) getValue() inout {
     return value;
+  }
+
+  void setValue(ubyte[] val) {
+    value = val;
   }
 }

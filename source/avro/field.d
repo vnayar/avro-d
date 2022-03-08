@@ -70,27 +70,27 @@ public class Field {
     }
   }
 
-  public string getName() {
+  public string getName() const {
     return name;
   }
 
-  public int getPosition() {
+  public int getPosition() const {
     return position;
   }
 
-  public Schema getSchema() {
+  public const(Schema) getSchema() const {
     return schema;
   }
 
-  public string getDoc() {
+  public string getDoc() const {
     return doc;
   }
 
-  public bool hasDefaultValue() {
+  public bool hasDefaultValue() const {
     return schema.getType() == Type.NULL || !defaultValue.isNull();
   }
 
-  public JSONValue getDefaultValue() {
+  public JSONValue getDefaultValue() const {
     return defaultValue;
   }
 

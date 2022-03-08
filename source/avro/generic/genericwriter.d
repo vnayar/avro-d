@@ -146,3 +146,58 @@ EOS");
       0x00, 0x08, 0x62, 0x6C, 0x75, 0x65
   ]);
 }
+
+unittest {
+  import std.algorithm : map, joiner;
+  import std.format : format;
+  import std.array : appender;
+  import avro.parser : Parser;
+  import avro.codec.binaryencoder;
+
+  auto parser = new Parser();
+  Schema schema = parser.parseText(q"EOS
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "e", "type": {"type": "enum", "symbols": ["FULLTIME", "PARTTIME"], "name": "Job"}},
+     {"name": "a", "type": {"type": "array", "items": "float"}},
+     {"name": "m", "type": {"type": "map", "values": "long"}},
+     {"name": "f", "type": {"type": "fixed", "size": 4, "name": "myfixed"}}
+ ]
+}
+EOS");
+  GenericDatum datum = new GenericDatum(schema);
+  assert(datum.getType == Type.RECORD);
+  datum["e"].getValue!(GenericEnum).setSymbol("PARTTIME");
+  assert(datum["e"].getValue!(GenericEnum).getValue() == 1);
+  pragma(msg, "typeof(datum[\"a\"]) = " ~ typeid(typeof(datum["a"])).stringof);
+  datum["a"] ~= 1.23f;
+  datum["a"] ~= 4.56f;
+  assert(datum["a"].getValue!(GenericArray).getValue().length == 2);
+  datum["m"]["m1"] = 10L;
+  datum["m"]["m2"] = 20L;
+  assert(datum["m"]["m1"].getValue!long == 10L);
+  datum["f"].getValue!(GenericFixed).setValue([0x01, 0x02, 0x03, 0x04]);
+  assert(datum["f"].getValue!(GenericFixed).getValue() == [0x01, 0x02, 0x03, 0x04]);
+
+  ubyte[] data;
+  auto encoder = binaryEncoder(appender(&data));
+  GenericWriter writer = new GenericWriter(schema, encoder);
+  writer.write(datum);
+
+  assert(data == [
+  // Field: e
+  // idx=1
+      0x02,
+  // Field: a
+  // len=2  1.23                    4.56                   len=0
+      0x04, 0xa4, 0x70, 0x9d, 0x3f, 0x85, 0xeb, 0x91, 0x40, 0x00,
+  // Field: m
+  // len=2 len=2     m     2    20 len=2     m     1    10 len=0
+      0x04, 0x04, 0x6d, 0x32, 0x28, 0x04, 0x6D, 0x31, 0x14, 0x00,
+  // Field: f
+  // 4-bytes
+      0x01, 0x02, 0x03, 0x04,
+  ], data.map!(a => format("0x%02x", a)).joiner(" ").to!string);
+}
