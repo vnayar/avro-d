@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Struct OrderedMap</title>
+		<link rel="stylesheet" type="text/css" href="../../styles/ddox.css"/>
+		<link rel="stylesheet" href="../../prettify/prettify.css" type="text/css"/>
+		<script type="text/javascript" src="../../scripts/jquery.js">/**/</script><script type="text/javascript" src="../../scripts/ddox.js">/**/</script>
+	</head>
+	<body onload="setupDdox();">
+		<nav id="main-nav">
+			<noscript>
+				<p style="color: red">The search functionality needs JavaScript enabled</p>
+			</noscript>
+			<div id="symbolSearchPane" style="display: none">
+				<form action="#" method="GET">
+					<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(40);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();"/>
+				</form>
+				<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+$('#symbolSearchPane').show();</script>
+			</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">avro
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">codec
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/binarydecoder.html">binarydecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/binaryencoder.html">binaryencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/bufferedoutputrange.html">bufferedoutputrange</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/decoder.html">decoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/encoder.html">encoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/zigzag.html">zigzag</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">generic
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../avro/generic/genericdata.html">genericdata</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/attributes.html">attributes</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/exception.html">exception</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/field.html">field</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/name.html">name</a>
+					</div>
+				</li>
+				<li>
+					<div class="module selected">
+						<a href="../../avro/orderedmap.html">orderedmap</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/parser.html">parser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/schema.html">schema</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/schematable.html">schematable</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/type.html">type</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+			</ul>
+		</nav>
+		<div id="main-contents">
+			<h1>Struct OrderedMap</h1><p>An associative array that permits access to ordered keys.
+</p>
+			<div class="prototype">
+				<code class="lang-d">
+					<div class="single-prototype">
+			<span class="kwd">struct</span> <span class="typ">OrderedMap</span>(KeyT, ValueT)
+			<span class="pun">;</span>
+					</div>
+				</code>
+			</div>
+			<section><p>This is a thin wrapper around D's built-in
+   [Associative Arrays](https://dlang.org/spec/hash-map.html) couple with an
+   [Array](https://dlang.org/spec/arrays.html) that keeps track of key order.
+</p>
+
+<p>   The interface is identical to an Associative Array with one exception: an [OrderedMap]
+   may not be initialized from a literal, because the order of keys in a literal is not
+   known. E.g. <code class="lang-d"><span class="typ">OrderedMap</span><span class="pun">!(</span><span class="typ">string</span><span class="pun">, </span><span class="typ">int</span><span class="pun">) = [</span><span class="str">"a"</span><span class="pun">: </span><span class="lit">2</span><span class="pun">, </span><span class="str">"b"</span><span class="pun">: </span><span class="lit">1</span><span class="pun">];</span></code> is not permitted.
+</p>
+</section>
+
+			<section><h2>Fields</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Type</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/orderedmap/OrderedMap.map.html" class="public"><code>map</code></a>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">ValueT</span><span class="pun">[</span><span class="typ">KeyT</span><span class="pun">]</span></code></td><td>The underlying associative array used.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/orderedmap/OrderedMap.orderedKeys.html" class="public"><code>orderedKeys</code></a>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">KeyT</span><span class="pun">[]</span></code></td><td>A maintained list of keys in the order they were added.
+</td>
+					</tr>
+				</table>
+			</section>
+			<section><h2>Methods</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/orderedmap/OrderedMap.clear.html" class="public">
+								<code>clear</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Removes all map keys and clears the orderedKeys.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/orderedmap/OrderedMap.opAssign.html" class="public">
+								<code>opAssign</code>
+							</a>
+							<span class="tableEntryAnnotation">(map)</span>
+						</td>
+						<td>Hide this method because the order of the initial map is unknown.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/orderedmap/OrderedMap.opIndexAssign.html" class="public">
+								<code>opIndexAssign</code>
+							</a>
+							<span class="tableEntryAnnotation">(value, key)</span>
+						</td>
+						<td>Assign a value to the map and add it to the orderedKeys if it is new.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/orderedmap/OrderedMap.remove.html" class="public">
+								<code>remove</code>
+							</a>
+							<span class="tableEntryAnnotation">(key)</span>
+						</td>
+						<td>Removes a single item from the map and the orderedKeys.
+</td>
+					</tr>
+				</table>
+			</section>
+			<section><h2>Example</h2>
+<p>Initializing from an unordered map is not allowed.
+</p>
+<pre class="code"><code class="lang-d"><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">exception </span><span class="pun">: </span><span class="pln">assertThrown</span><span class="pun">;
+</span><span class="typ">OrderedMap</span><span class="pun">!(</span><span class="typ">string</span><span class="pun">, </span><span class="typ">int</span><span class="pun">) </span><span class="pln">omap</span><span class="pun">;
+</span><span class="pln">assertThrown</span><span class="pun">!</span><span class="typ">AssertError</span><span class="pun">(</span><span class="pln">omap </span><span class="pun">= [</span><span class="str">"a"</span><span class="pun">: </span><span class="lit">1</span><span class="pun">, </span><span class="str">"b"</span><span class="pun">: </span><span class="lit">2</span><span class="pun">]);
+</span></code></pre>
+</section>
+<section><h2>Example</h2>
+<p>Values can be read and written just like an associative array.
+</p>
+<pre class="code"><code class="lang-d"><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">exception </span><span class="pun">: </span><span class="pln">assertThrown</span><span class="pun">;
+</span><span class="typ">OrderedMap</span><span class="pun">!(</span><span class="typ">string</span><span class="pun">, </span><span class="typ">int</span><span class="pun">) </span><span class="pln">omap</span><span class="pun">;
+</span><span class="pln">omap</span><span class="pun">[</span><span class="str">"b"</span><span class="pun">] = </span><span class="lit">1</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">omap</span><span class="pun">[</span><span class="str">"b"</span><span class="pun">] == </span><span class="lit">1</span><span class="pun">);
+</span></code></pre>
+</section>
+<section><h2>Example</h2>
+<p>A new property <code class="lang-d"><a href="../../avro/orderedmap/OrderedMap.orderedKeys.html"><span class="pln">orderedKeys</span></a></code> is available to use.
+</p>
+<pre class="code"><code class="lang-d"><span class="typ">OrderedMap</span><span class="pun">!(</span><span class="typ">string</span><span class="pun">, </span><span class="typ">int</span><span class="pun">) </span><span class="pln">omap</span><span class="pun">;
+</span><span class="pln">omap</span><span class="pun">[</span><span class="str">"b"</span><span class="pun">] = </span><span class="lit">1</span><span class="pun">;
+</span><span class="pln">omap</span><span class="pun">[</span><span class="str">"a"</span><span class="pun">] = </span><span class="lit">2</span><span class="pun">;
+</span><span class="pln">omap</span><span class="pun">[</span><span class="str">"c"</span><span class="pun">] = </span><span class="lit">3</span><span class="pun">;
+</span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">omap<wbr/></span><span class="pun">.</span><span class="pln">orderedKeys </span><span class="pun">== [</span><span class="str">"b"</span><span class="pun">, </span><span class="str">"a"</span><span class="pun">, </span><span class="str">"c"</span><span class="pun">]);
+</span></code></pre>
+</section>
+
+			<footer>
+				<table class="license-info">
+					<tr>
+						<th>Authors</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>Copyright</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>License</th>
+						<td>
+							
+						</td>
+					</tr>
+				</table>
+				<p class="faint">Generated using the DDOX documentation generator</p>
+			</footer>
+		</div>
+	</body>
+</html>

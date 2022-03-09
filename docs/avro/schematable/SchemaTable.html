@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Class SchemaTable</title>
+		<link rel="stylesheet" type="text/css" href="../../styles/ddox.css"/>
+		<link rel="stylesheet" href="../../prettify/prettify.css" type="text/css"/>
+		<script type="text/javascript" src="../../scripts/jquery.js">/**/</script><script type="text/javascript" src="../../scripts/ddox.js">/**/</script>
+	</head>
+	<body onload="setupDdox();">
+		<nav id="main-nav">
+			<noscript>
+				<p style="color: red">The search functionality needs JavaScript enabled</p>
+			</noscript>
+			<div id="symbolSearchPane" style="display: none">
+				<form action="#" method="GET">
+					<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(40);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();"/>
+				</form>
+				<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+$('#symbolSearchPane').show();</script>
+			</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">avro
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">codec
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/binarydecoder.html">binarydecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/binaryencoder.html">binaryencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/bufferedoutputrange.html">bufferedoutputrange</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/decoder.html">decoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/encoder.html">encoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/zigzag.html">zigzag</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">generic
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../avro/generic/genericdata.html">genericdata</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/attributes.html">attributes</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/exception.html">exception</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/field.html">field</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/name.html">name</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/orderedmap.html">orderedmap</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/parser.html">parser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/schema.html">schema</a>
+					</div>
+				</li>
+				<li>
+					<div class="module selected">
+						<a href="../../avro/schematable.html">schematable</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/type.html">type</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+			</ul>
+		</nav>
+		<div id="main-contents">
+			<h1>Class SchemaTable</h1><p>A lookup table of known names for Schemas and the default namespace used during parsing.
+</p>
+			<div class="prototype">
+				<code class="lang-d">
+					<div class="single-prototype">
+			<span class="kwd">class</span> <span class="typ">SchemaTable</span>
+			<span class="pun">;</span>
+					</div>
+				</code>
+			</div>
+			<section><p>Some names are known before the schema is read, such as primitive types, which have no
+   namespace and whose name matches their type. During parsing, if a schema does not
+   designate a namespace, it inherits the namespace from the most tightly enclosing schema
+   or protocol.
+</p>
+</section>
+
+			<section><h2>Methods</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schematable/SchemaTable.addSchema.html" class="public">
+								<code>addSchema</code>
+							</a>
+							<span class="tableEntryAnnotation">(schema)</span>
+						</td>
+						<td>Adds a new schema to the set of known schemas.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schematable/SchemaTable.containsName.html" class="public">
+								<code>containsName</code>
+							</a>
+							<span class="tableEntryAnnotation">(name)</span>
+						</td>
+						<td>Indicates whether a given name is known in the SchemaTable.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schematable/SchemaTable.getSchemaByName.html" class="public">
+								<code>getSchemaByName</code>
+							</a>
+							<span class="tableEntryAnnotation">(name)</span>
+						</td>
+						<td>Look up a previously known Schema by its name.
+</td>
+					</tr>
+				</table>
+			</section>
+			<section><h2>See Also</h2>
+<p>https://avro.apache.org/docs/current/spec.html#names
+</p>
+</section>
+
+			<footer>
+				<table class="license-info">
+					<tr>
+						<th>Authors</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>Copyright</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>License</th>
+						<td>
+							
+						</td>
+					</tr>
+				</table>
+				<p class="faint">Generated using the DDOX documentation generator</p>
+			</footer>
+		</div>
+	</body>
+</html>

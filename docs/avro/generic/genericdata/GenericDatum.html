@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Class GenericDatum</title>
+		<link rel="stylesheet" type="text/css" href="../../../styles/ddox.css"/>
+		<link rel="stylesheet" href="../../../prettify/prettify.css" type="text/css"/>
+		<script type="text/javascript" src="../../../scripts/jquery.js">/**/</script><script type="text/javascript" src="../../../scripts/ddox.js">/**/</script>
+	</head>
+	<body onload="setupDdox();">
+		<nav id="main-nav">
+			<noscript>
+				<p style="color: red">The search functionality needs JavaScript enabled</p>
+			</noscript>
+			<div id="symbolSearchPane" style="display: none">
+				<form action="#" method="GET">
+					<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(40);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();"/>
+				</form>
+				<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../../";
+$('#symbolSearchPane').show();</script>
+			</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">avro
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">codec
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/binarydecoder.html">binarydecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/binaryencoder.html">binaryencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/bufferedoutputrange.html">bufferedoutputrange</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/decoder.html">decoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/encoder.html">encoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/zigzag.html">zigzag</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view ">
+					<div class="package ">generic
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module selected">
+						<a href="../../../avro/generic/genericdata.html">genericdata</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/attributes.html">attributes</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/exception.html">exception</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/field.html">field</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/name.html">name</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/orderedmap.html">orderedmap</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/parser.html">parser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/schema.html">schema</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/schematable.html">schematable</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/type.html">type</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+			</ul>
+		</nav>
+		<div id="main-contents">
+			<h1>Class GenericDatum</h1><p>GenericDatum which can hold any Avro type. The datum has a type and a value. The type is one of
+   the Avro data types. The D type for value corresponds to the Avro type.
+   - An avro <code class="lang-d"><span class="kwd">null</span></code> corresponds to no D type. It is illegal to try to access values for <code class="lang-d"><span class="kwd">null</span></code>.
+   - Avro <code class="lang-d"><span class="pln">boolean</span></code> maps to D <code class="lang-d"><span class="typ">bool</span></code>
+   - Avro <code class="lang-d"><span class="typ">int</span></code> maps to D <code class="lang-d"><span class="typ">int</span></code>.
+   - Avro <code class="lang-d"><span class="typ">long</span></code> maps to D <code class="lang-d"><span class="typ">long</span></code>.
+   - Avro <code class="lang-d"><span class="typ">float</span></code> maps to D <code class="lang-d"><span class="typ">float</span></code>.
+   - Avro <code class="lang-d"><span class="typ">double</span></code> maps to D <code class="lang-d"><span class="typ">double</span></code>.
+   - Avro <code class="lang-d"><span class="typ">string</span></code> maps to D <code class="lang-d"><span class="typ">string</span></code>.
+   - Avro <code class="lang-d"><span class="pln">bytes</span></code> maps to D <code class="lang-d"><span class="typ">ubyte</span><span class="pun">[]</span></code>.
+   - Avro <code class="lang-d"><span class="pln">fixed</span></code> maps to D class <code class="lang-d"><a href="../../../avro/generic/genericdata/GenericFixed.html"><span class="typ">GenericFixed</span></a></code>.
+   - Avro <code class="lang-d"><span class="kwd">enum</span></code> maps to D class <code class="lang-d"><a href="../../../avro/generic/genericdata/GenericEnum.html"><span class="typ">GenericEnum</span></a></code>.
+   - Avro <code class="lang-d"><span class="pln">array</span></code> maps to D class <code class="lang-d"><a href="../../../avro/generic/genericdata/GenericArray.html"><span class="typ">GenericArray</span></a></code>.
+   - Avro <code class="lang-d"><span class="pln">map</span></code> maps to D class <code class="lang-d"><a href="../../../avro/generic/genericdata/GenericMap.html"><span class="typ">GenericMap</span></a></code>.
+   - There is no D type corresponding to Avro <code class="lang-d"><span class="kwd">union</span></code>. The object should have the D type
+     corresponding to one of the constituent types of the union.
+</p>
+			<div class="prototype">
+				<code class="lang-d">
+					<div class="single-prototype">
+			<span class="kwd">class</span> <span class="typ">GenericDatum</span>
+			<span class="pun">;</span>
+					</div>
+				</code>
+			</div>
+			<section><p>Each GenericDatum holds a value which is set using the <code class="lang-d"><wbr/><span class="pun">.</span><span class="pln">setValue</span><span class="pun">(</span><span class="pln">T</span><span class="pun">)(</span><span class="pln">T val</span><span class="pun">)</span></code> method and retrieved
+   via the `.getValue!T() method. Because a GenericDatum can store any type, the caller must provide
+   the desired type while calling <code class="lang-d"><wbr/><span class="pun">.</span><span class="pln">getValue</span><span class="pun">!</span><span class="pln">T</span><span class="pun">()</span></code>, and this type must match the type of the schema.
+</p>
+
+<pre class="code"><code class="lang-d"><span class="pln">  </span><span class="typ">Schema </span><span class="pln">schema </span><span class="pun">= </span><span class="pln">parser<wbr/></span><span class="pun">.</span><span class="pln">parseText</span><span class="pun">(</span><span class="str">q"EOS
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number", "type": ["int", "null"]},
+     {"name": "scores", "type": {"type": "array", "items": "float"}},
+     {"name": "m", "type": {"type": "map", "values": "long"}}
+ ]
+}
+EOS"</span><span class="pun">);
+
+   </span><span class="com">// Initializes the GenericDatum according to the schema with default values.
+   </span><span class="typ">GenericDatum </span><span class="pln">datum </span><span class="pun">= </span><span class="kwd">new </span><span class="typ">GenericDatum</span><span class="pun">(</span><span class="pln">schema</span><span class="pun">);
+   </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">datum<wbr/></span><span class="pun">.</span><span class="pln">getType </span><span class="pun">== </span><span class="typ">Type<wbr/></span><span class="pun">.</span><span class="pln">RECORD</span><span class="pun">);
+
+   </span><span class="com">// Primitive values can be set and retrieved.
+   </span><span class="pln">datum<wbr/></span><span class="pun">.</span><span class="pln">getValue</span><span class="pun">!(<a href="../../../avro/generic/genericdata/GenericRecord.html"></span><span class="typ">GenericRecord</span></a><span class="pun">)<wbr/>.</span><span class="pln">getField</span><span class="pun">(</span><span class="str">"name"</span><span class="pun">)<wbr/>.</span><span class="pln">setValue</span><span class="pun">(</span><span class="str">"bob"</span><span class="pun">);
+
+   </span><span class="com">// Convenience shortcut using opIndex() and opAssign() for primitive types.
+   </span><span class="pln">datum</span><span class="pun">[</span><span class="str">"name"</span><span class="pun">] = </span><span class="str">"bob"</span><span class="pun">;
+
+   </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">datum</span><span class="pun">[</span><span class="str">"name"</span><span class="pun">]<wbr/>.</span><span class="pln">getValue</span><span class="pun">!</span><span class="typ">string </span><span class="pun">== </span><span class="str">"bob"</span><span class="pun">);
+
+   </span><span class="com">// Enums have convenience functions directly on GenericData.
+   </span><span class="pln">datum</span><span class="pun">[</span><span class="str">"favorite_number"</span><span class="pun">]<wbr/>.</span><span class="pln">setUnionIndex</span><span class="pun">(</span><span class="lit">0</span><span class="pun">);
+   </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">datum</span><span class="pun">[</span><span class="str">"favorite_number"</span><span class="pun">]<wbr/>.</span><span class="pln">getUnionIndex</span><span class="pun">() == </span><span class="lit">0</span><span class="pun">);
+
+   </span><span class="com">// Arrays also have convenience functions.
+   </span><span class="pln">datum</span><span class="pun">[</span><span class="str">"scores"</span><span class="pun">] ~= </span><span class="lit">1.23f</span><span class="pun">;
+   </span><span class="pln">datum</span><span class="pun">[</span><span class="str">"scores"</span><span class="pun">] ~= </span><span class="lit">4.56f</span><span class="pun">;
+   </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">datum</span><span class="pun">[</span><span class="str">"scores"</span><span class="pun">]<wbr/>.</span><span class="pln">length </span><span class="pun">== </span><span class="lit">2</span><span class="pun">);
+
+   </span><span class="com">// Maps do as well.
+   </span><span class="pln">datum</span><span class="pun">[</span><span class="str">"m"</span><span class="pun">][</span><span class="str">"m1"</span><span class="pun">] = </span><span class="lit">10L</span><span class="pun">;
+   </span><span class="pln">datum</span><span class="pun">[</span><span class="str">"m"</span><span class="pun">][</span><span class="str">"m2"</span><span class="pun">] = </span><span class="lit">20L</span><span class="pun">;
+   </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">datum</span><span class="pun">[</span><span class="str">"m"</span><span class="pun">][</span><span class="str">"m1"</span><span class="pun">]<wbr/>.</span><span class="pln">getValue</span><span class="pun">!</span><span class="typ">long </span><span class="pun">== </span><span class="lit">10L</span><span class="pun">);</span></code></pre>
+</section>
+
+			<section><h2>Constructors</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.this.html" class="public">
+								<code>this</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Makes a new NULL GenericDatum.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.this.html" class="public">
+								<code>this</code>
+							</a>
+							<span class="tableEntryAnnotation">(val)</span>
+						</td>
+						<td>A constructor allowing GenericDatum to be created for primitive schemas from D equivalents.
+</td>
+					</tr>
+				</table>
+			</section>
+			<section><h2>Methods</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.getUnionIndex.html" class="public">
+								<code>getUnionIndex</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Returns the index of the current branch, if this is a union.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.getValue.html" class="public">
+								<code>getValue</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Returns the value held by this datum.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.isUnion.html" class="public">
+								<code>isUnion</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Returns true if an only if this datum is a union.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.length.html" class="public">
+								<code>length</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>A shortcut for .getValue!(GenericType).getValue().length where GenericType is one of
+     GenericArray or GenericMap.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.opAssign.html" class="public">
+								<code>opAssign</code>
+							</a>
+							<span class="tableEntryAnnotation">(val)</span>
+						</td>
+						<td>Sets the value of the GenericDatum to a value corresponding with its type.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.opCast.html" class="public">
+								<code>opCast</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Implementing opCast allows values to be retrieved using <code class="lang-d"><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">conv<wbr/></span><span class="pun">.</span><span class="pln">to</span></code>.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.opIndex.html" class="public">
+								<code>opIndex</code>
+							</a>
+							<span class="tableEntryAnnotation">(name)</span>
+						</td>
+						<td>For records/maps, looks up a record with <code class="lang-d"><a href="../../../avro/generic/genericdata/GenericDatum.opIndex.html#name"><span class="pln">name</span></a></code>.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.opIndexAssign.html" class="public">
+								<code>opIndexAssign</code>
+							</a>
+							<span class="tableEntryAnnotation">(val, name)</span>
+						</td>
+						<td>For records/maps, assign a value to a given key.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.opIndexAssign.html" class="public">
+								<code>opIndexAssign</code>
+							</a>
+							<span class="tableEntryAnnotation">(val, idx)</span>
+						</td>
+						<td>For arrays, assign a value to a given index.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.setUnionIndex.html" class="public">
+								<code>setUnionIndex</code>
+							</a>
+							<span class="tableEntryAnnotation">(branch)</span>
+						</td>
+						<td>Selects a new branch in the union if this is a union.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/generic/genericdata/GenericDatum.setValue.html" class="public">
+								<code>setValue</code>
+							</a>
+							<span class="tableEntryAnnotation">(val)</span>
+						</td>
+						<td>Sets the value of the GenericDatum to a value corresponding with its type.
+</td>
+					</tr>
+				</table>
+			</section>
+			
+			<footer>
+				<table class="license-info">
+					<tr>
+						<th>Authors</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>Copyright</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>License</th>
+						<td>
+							
+						</td>
+					</tr>
+				</table>
+				<p class="faint">Generated using the DDOX documentation generator</p>
+			</footer>
+		</div>
+	</body>
+</html>

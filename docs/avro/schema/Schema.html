@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Class Schema</title>
+		<link rel="stylesheet" type="text/css" href="../../styles/ddox.css"/>
+		<link rel="stylesheet" href="../../prettify/prettify.css" type="text/css"/>
+		<script type="text/javascript" src="../../scripts/jquery.js">/**/</script><script type="text/javascript" src="../../scripts/ddox.js">/**/</script>
+	</head>
+	<body onload="setupDdox();">
+		<nav id="main-nav">
+			<noscript>
+				<p style="color: red">The search functionality needs JavaScript enabled</p>
+			</noscript>
+			<div id="symbolSearchPane" style="display: none">
+				<form action="#" method="GET">
+					<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(40);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();"/>
+				</form>
+				<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../";
+$('#symbolSearchPane').show();</script>
+			</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">avro
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">codec
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/binarydecoder.html">binarydecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/binaryencoder.html">binaryencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/bufferedoutputrange.html">bufferedoutputrange</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/decoder.html">decoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/encoder.html">encoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/codec/zigzag.html">zigzag</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">generic
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../avro/generic/genericdata.html">genericdata</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/attributes.html">attributes</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/exception.html">exception</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/field.html">field</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/name.html">name</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/orderedmap.html">orderedmap</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/parser.html">parser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module selected">
+						<a href="../../avro/schema.html">schema</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/schematable.html">schematable</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../avro/type.html">type</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+			</ul>
+		</nav>
+		<div id="main-contents">
+			<h1>Class Schema</h1><p>An Avro Schema is one of the following:
+   - A JSON string, matching a defined type like "int", "string", or another Schema's name.
+   - A JSON object, of the form <code class="lang-d"><span class="pun">{</span><span class="str">"type"</span><span class="pun">: </span><span class="str">"typeName"</span><span class="pun">, ...</span><span class="pln">attributes</span><span class="pun">...}</span></code>.
+   - A JSON array of type names like <code class="lang-d"><span class="pun">[</span><span class="str">"null"</span><span class="pun">, </span><span class="str">"string"</span><span class="pun">]</span></code>, representing a union where values
+     adhering to the schema may be one of the listed types.
+</p>
+			<div class="prototype">
+				<code class="lang-d">
+					<div class="single-prototype">
+			<span class="kwd">class</span> <span class="typ">Schema</span>
+			<span class="pun">;</span>
+					</div>
+				</code>
+			</div>
+			<section><p>It should be noted that certain types can contain schemas via their attributes, making
+   a Schema a tree-like structure with each Schema having potential nested schemas.
+</p>
+</section>
+
+			<section><h2>Methods</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.addAlias.html" class="public">
+								<code>addAlias</code>
+							</a>
+							<span class="tableEntryAnnotation">(name, namespace)</span>
+						</td>
+						<td>If this is a record, enum, or fixed, add an alias.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.createPrimitive.html" class="public">
+								<code>createPrimitive</code>
+							</a>
+							<span class="tableEntryAnnotation">(type)</span>
+						</td>
+						<td>Creates a schema given a primitive type.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getAliases.html" class="public">
+								<code>getAliases</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is a record, enum, or fixed, return its aliases, if any.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getDoc.html" class="public">
+								<code>getDoc</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is a record, enum, or fixed, returns its docstring, if available.
+     Otherwise, returns null.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getElementSchema.html" class="public">
+								<code>getElementSchema</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is an array, returns its element type.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getEnumDefault.html" class="public">
+								<code>getEnumDefault</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is an enum, return its default value.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getEnumOrdinal.html" class="public">
+								<code>getEnumOrdinal</code>
+							</a>
+							<span class="tableEntryAnnotation">(symbol)</span>
+						</td>
+						<td>If this is an enum, return a symbol's ordinal value.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getEnumSymbols.html" class="public">
+								<code>getEnumSymbols</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is an enum, return its symbols.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getField.html" class="public">
+								<code>getField</code>
+							</a>
+							<span class="tableEntryAnnotation">(fieldName)</span>
+						</td>
+						<td>If this is a record, returns the Field with the given name [fieldName]. If there is no field by
+    that name, a [null] is returned.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getFields.html" class="public">
+								<code>getFields</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is a record, returns the fields in it. The returned list is in the order of their
+    positions.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getFixedSize.html" class="public">
+								<code>getFixedSize</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is fixed, returns its size.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getFullname.html" class="public">
+								<code>getFullname</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is a record, enum or fixed, returns its namespace-qualified name,
+     otherwise returns the name of the primitive type.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getIndexNamed.html" class="public">
+								<code>getIndexNamed</code>
+							</a>
+							<span class="tableEntryAnnotation">(name)</span>
+						</td>
+						<td>If this is a union, return the branch with the provided full name.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getLogicalType.html" class="public">
+								<code>getLogicalType</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Return the logical type, which can be combined with a type for special interpretation,
+     like a timestamp or a date.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getName.html" class="public">
+								<code>getName</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is a record, enum, or fixed, return its name, otherwise return the name of
+     the primitive type.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getNamespace.html" class="public">
+								<code>getNamespace</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is a record, enum or fixed, returns its namespace, if any.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getType.html" class="public">
+								<code>getType</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Return the type of this schema.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getTypes.html" class="public">
+								<code>getTypes</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is a union, returns its types.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.getValueSchema.html" class="public">
+								<code>getValueSchema</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>If this is a map, returns its value type.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.hasEnumSymbol.html" class="public">
+								<code>hasEnumSymbol</code>
+							</a>
+							<span class="tableEntryAnnotation">(symbol)</span>
+						</td>
+						<td>If this is an enum, returns true if it contains given symbol.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.isError.html" class="public">
+								<code>isError</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Indicates whether the schema is a both a record an an error type in a protocol.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schema/Schema.setFields.html" class="public">
+								<code>setFields</code>
+							</a>
+							<span class="tableEntryAnnotation">(fields)</span>
+						</td>
+						<td>If this is a record, set its fields. The fields can be set only once in a
+     schema.
+</td>
+					</tr>
+				</table>
+			</section>
+			<section><h2>See Also</h2>
+<p>https://avro.apache.org/docs/current/spec.html#schemas
+</p>
+</section>
+
+			<footer>
+				<table class="license-info">
+					<tr>
+						<th>Authors</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>Copyright</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>License</th>
+						<td>
+							
+						</td>
+					</tr>
+				</table>
+				<p class="faint">Generated using the DDOX documentation generator</p>
+			</footer>
+		</div>
+	</body>
+</html>

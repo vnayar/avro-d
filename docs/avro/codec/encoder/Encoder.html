@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Class Encoder</title>
+		<link rel="stylesheet" type="text/css" href="../../../styles/ddox.css"/>
+		<link rel="stylesheet" href="../../../prettify/prettify.css" type="text/css"/>
+		<script type="text/javascript" src="../../../scripts/jquery.js">/**/</script><script type="text/javascript" src="../../../scripts/ddox.js">/**/</script>
+	</head>
+	<body onload="setupDdox();">
+		<nav id="main-nav">
+			<noscript>
+				<p style="color: red">The search functionality needs JavaScript enabled</p>
+			</noscript>
+			<div id="symbolSearchPane" style="display: none">
+				<form action="#" method="GET">
+					<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(40);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();"/>
+				</form>
+				<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../../";
+$('#symbolSearchPane').show();</script>
+			</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">avro
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">codec
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/binarydecoder.html">binarydecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/binaryencoder.html">binaryencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/bufferedoutputrange.html">bufferedoutputrange</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/decoder.html">decoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module selected">
+						<a href="../../../avro/codec/encoder.html">encoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/zigzag.html">zigzag</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">generic
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../avro/generic/genericdata.html">genericdata</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/attributes.html">attributes</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/exception.html">exception</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/field.html">field</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/name.html">name</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/orderedmap.html">orderedmap</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/parser.html">parser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/schema.html">schema</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/schematable.html">schematable</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/type.html">type</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+			</ul>
+		</nav>
+		<div id="main-contents">
+			<h1>Class Encoder</h1><p>Low-level support for serializing Avro values.
+</p>
+			<div class="prototype">
+				<code class="lang-d">
+					<div class="single-prototype">
+			<span class="kwd">class</span> <span class="typ">Encoder</span>
+			<span class="pun">;</span>
+					</div>
+				</code>
+			</div>
+			<section><p>This class has two types of methods. One type of methods support the writing
+   of leaf values (for example, [Encoder.writeLong] and [Encoder.writeString]).
+   These methods have analogs in [Decoder].
+</p>
+
+<p>   The other type of methods support the writing of maps and arrays. These
+   methods are [Encoder.writeArrayStart], [Encoder.startItem], and
+   [Encoder.writeArrayEnd] (and similar methods for maps). Some implementations
+   of [Encoder] handle the buffering required to break large maps and
+   arrays into blocks, which is necessary for applications that want to do
+   streaming. (See [Encoder.writeArrayStart] for details on these methods.)
+</p>
+</section>
+
+			<section><h2>Methods</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.flush.html" class="public">
+								<code>flush</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Empty any internal buffers to the underlying output.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.setItemCount.html" class="public">
+								<code>setItemCount</code>
+							</a>
+							<span class="tableEntryAnnotation">(itemCount)</span>
+						</td>
+						<td>Call this method before writing a batch of items in an array or a map. Then
+     for each item, call [startItem()] followed by any of the other write
+     methods of [Encoder]. The number of calls to [startItem()] must
+     be equal to the count specified in [setItemCount()]. Once a batch is
+     completed you can start another batch with [setItemCount()].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.startItem.html" class="public">
+								<code>startItem</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Start a new item of an array or map. See {@link #writeArrayStart} for usage
+     information.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeArrayEnd.html" class="public">
+								<code>writeArrayEnd</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Call this method to finish writing an array. See {@link #writeArrayStart} for
+     usage information.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeArrayStart.html" class="public">
+								<code>writeArrayStart</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Call this method to start writing an array.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeBoolean.html" class="public">
+								<code>writeBoolean</code>
+							</a>
+							<span class="tableEntryAnnotation">(b)</span>
+						</td>
+						<td>Write a boolean value.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeBytes.html" class="public">
+								<code>writeBytes</code>
+							</a>
+							<span class="tableEntryAnnotation">(bytes, start, len)</span>
+						</td>
+						<td>Write a byte string.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeBytes.html" class="public">
+								<code>writeBytes</code>
+							</a>
+							<span class="tableEntryAnnotation">(bytes)</span>
+						</td>
+						<td>Writes a byte string. Equivalent to <code class="lang-d"><a href="../../../avro/codec/encoder/Encoder.writeBytes.html"><span class="pln">writeBytes</span></a><span class="pun">(<a href="../../../avro/codec/encoder/Encoder.writeBytes.html#bytes"></span><span class="pln">bytes</span></a><span class="pun">, </span><span class="lit">0</span><span class="pun">, </span><span class="pln">bytes<wbr/></span><span class="pun">.</span><span class="pln">length</span><span class="pun">)</span></code>
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeDouble.html" class="public">
+								<code>writeDouble</code>
+							</a>
+							<span class="tableEntryAnnotation">(d)</span>
+						</td>
+						<td>Write a double.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeEnum.html" class="public">
+								<code>writeEnum</code>
+							</a>
+							<span class="tableEntryAnnotation">(e)</span>
+						</td>
+						<td>Writes an enumeration.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeFixed.html" class="public">
+								<code>writeFixed</code>
+							</a>
+							<span class="tableEntryAnnotation">(bytes, start, len)</span>
+						</td>
+						<td>Writes a fixed size binary object.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeFixed.html" class="public">
+								<code>writeFixed</code>
+							</a>
+							<span class="tableEntryAnnotation">(bytes)</span>
+						</td>
+						<td>A shorthand for <code class="lang-d"><a href="../../../avro/codec/encoder/Encoder.writeFixed.html"><span class="pln">writeFixed</span></a><span class="pun">(<a href="../../../avro/codec/encoder/Encoder.writeFixed.html#bytes"></span><span class="pln">bytes</span></a><span class="pun">, </span><span class="lit">0</span><span class="pun">, </span><span class="pln">bytes<wbr/></span><span class="pun">.</span><span class="pln">length</span><span class="pun">)</span></code>.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeFloat.html" class="public">
+								<code>writeFloat</code>
+							</a>
+							<span class="tableEntryAnnotation">(f)</span>
+						</td>
+						<td>Write a float.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeInt.html" class="public">
+								<code>writeInt</code>
+							</a>
+							<span class="tableEntryAnnotation">(n)</span>
+						</td>
+						<td>Writes a 32-bit integer.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeLong.html" class="public">
+								<code>writeLong</code>
+							</a>
+							<span class="tableEntryAnnotation">(n)</span>
+						</td>
+						<td>Write a 64-bit integer.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeMapEnd.html" class="public">
+								<code>writeMapEnd</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Call this method to terminate the inner-most, currently-opened map. See
+     [writeArrayStart] for more details.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeMapStart.html" class="public">
+								<code>writeMapStart</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Call this to start a new map. See [writeArrayStart] for details on usage.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeNull.html" class="public">
+								<code>writeNull</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>"Writes" a null value. (Doesn't actually write anything, but advances the
+     state of the parser if this class is stateful.)
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeString.html" class="public">
+								<code>writeString</code>
+							</a>
+							<span class="tableEntryAnnotation">(str)</span>
+						</td>
+						<td>Write a Unicode character string.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeUnionIndex.html" class="public">
+								<code>writeUnionIndex</code>
+							</a>
+							<span class="tableEntryAnnotation">(unionIndex)</span>
+						</td>
+						<td>Call this method to write the tag of a union.
+</td>
+					</tr>
+				</table>
+			</section>
+			
+			<footer>
+				<table class="license-info">
+					<tr>
+						<th>Authors</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>Copyright</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>License</th>
+						<td>
+							
+						</td>
+					</tr>
+				</table>
+				<p class="faint">Generated using the DDOX documentation generator</p>
+			</footer>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Struct BufferedOutputRange</title>
+		<link rel="stylesheet" type="text/css" href="../../../styles/ddox.css"/>
+		<link rel="stylesheet" href="../../../prettify/prettify.css" type="text/css"/>
+		<script type="text/javascript" src="../../../scripts/jquery.js">/**/</script><script type="text/javascript" src="../../../scripts/ddox.js">/**/</script>
+	</head>
+	<body onload="setupDdox();">
+		<nav id="main-nav">
+			<noscript>
+				<p style="color: red">The search functionality needs JavaScript enabled</p>
+			</noscript>
+			<div id="symbolSearchPane" style="display: none">
+				<form action="#" method="GET">
+					<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(40);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();"/>
+				</form>
+				<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../../";
+$('#symbolSearchPane').show();</script>
+			</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">avro
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">codec
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/binarydecoder.html">binarydecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/binaryencoder.html">binaryencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module selected">
+						<a href="../../../avro/codec/bufferedoutputrange.html">bufferedoutputrange</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/decoder.html">decoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/encoder.html">encoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/zigzag.html">zigzag</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">generic
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../avro/generic/genericdata.html">genericdata</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/attributes.html">attributes</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/exception.html">exception</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/field.html">field</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/name.html">name</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/orderedmap.html">orderedmap</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/parser.html">parser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/schema.html">schema</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/schematable.html">schematable</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/type.html">type</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+			</ul>
+		</nav>
+		<div id="main-contents">
+			<h1>Struct BufferedOutputRange</h1><p>A buffering output range that writes to another output range in batches.
+</p>
+			<div class="prototype">
+				<code class="lang-d">
+					<div class="single-prototype">
+			<span class="kwd">struct</span> <span class="typ">BufferedOutputRange</span>(ORangeT, ElemT)
+			<br/>
+			&nbsp;&nbsp;
+			<br/>
+			<span class="kwd">if</span> <span class="pun">(</span><span class="pln">isBlockOutputRange</span><span class="pun">!(</span><span class="typ">ORangeT</span><span class="pun">, </span><span class="typ">ElemT</span><span class="pun">)</span><span class="pun">);</span>
+					</div>
+				</code>
+			</div>
+			<section><p>Sometimes there are efficiency costs associated with writing a single element at a time. Some
+   <code class="lang-d"><span class="typ">OutputRange</span></code>s take care of this themselves, and others do not. This is a utility that
+   generalizes this buffering logic when it is needed.
+</p>
+
+<p>   For example, suppose a FileOutputRange has element type <code class="lang-d"><span class="typ">ubyte</span><span class="pun">[]</span></code> (it writes many bytes at a
+   time). A <code class="lang-d"><span class="typ">BufferedOutputRange</span></code> wraps another <code class="lang-d"><span class="typ">OutputRange</span></code>, like the FileOutputRange, and permits
+   <code class="lang-d"><a href="../../../avro/codec/bufferedoutputrange/BufferedOutputRange.put.html"><span class="pln">put</span></a></code> calls of <code class="lang-d"><span class="typ">ubyte</span></code> or <code class="lang-d"><span class="typ">ubyte</span><span class="pun">[]</span></code> and stores them in a memory buffer. When this buffer is full,
+   a single <code class="lang-d"><a href="../../../avro/codec/bufferedoutputrange/BufferedOutputRange.put.html"><span class="pln">put</span></a><span class="pun">(</span><span class="typ">ubyte</span><span class="pun">[])</span></code> call will be made with the buffer's contents to the provided
+   FileOutputRange.
+</p>
+
+<p>   The standard OutputRange interface is expanded with <code class="lang-d"><a href="../../../avro/codec/bufferedoutputrange/BufferedOutputRange.flush.html"><span class="pln">flush</span></a><span class="pun">()</span></code>, which causes the current memory
+   buffer's contents to be written immediately to the wrapped <code class="lang-d"><span class="typ">OutputRange</span></code>.
+</p>
+</section>
+
+			<section><h2>Constructors</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/bufferedoutputrange/BufferedOutputRange.this.html" class="public">
+								<code>this</code>
+							</a>
+							<span class="tableEntryAnnotation">(oRange, bufSize)</span>
+						</td>
+						<td>Constructs a BufferedOutputRange which writes to <code class="lang-d"><a href="../../../avro/codec/bufferedoutputrange/BufferedOutputRange.this.html#oRange"><span class="pln">oRange</span></a></code> in batches up to <code class="lang-d"><a href="../../../avro/codec/bufferedoutputrange/BufferedOutputRange.this.html#bufSize"><span class="pln">bufSize</span></a></code>.
+</td>
+					</tr>
+				</table>
+			</section>
+			<section><h2>Methods</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/bufferedoutputrange/BufferedOutputRange.flush.html" class="public">
+								<code>flush</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Writes any buffered elements into the underlying output range.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/bufferedoutputrange/BufferedOutputRange.put.html" class="public">
+								<code>put</code>
+							</a>
+							<span class="tableEntryAnnotation">(elems)</span>
+						</td>
+						<td>Adds many elements, which may trigger flushes to the output range.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/bufferedoutputrange/BufferedOutputRange.put.html" class="public">
+								<code>put</code>
+							</a>
+							<span class="tableEntryAnnotation">(elem)</span>
+						</td>
+						<td>Adds a single element which may be buffered or trigger a flush to the output range.
+</td>
+					</tr>
+				</table>
+			</section>
+			<section><h2>Parameters</h2>
+<table><col class="caption"><tr><th>Name</th><th>Description</th></tr>
+<tr><td id="ORangeT">ORangeT</td><td> The type of the wrapped <code class="lang-d"><span class="typ">OutputRange</span></code>, capable of writing batches of elements.</td></tr>
+<tr><td id="ElemT">ElemT</td><td> The type of items in the batch that can be written to ORangeT.</td></tr>
+</table>
+</section>
+
+			<footer>
+				<table class="license-info">
+					<tr>
+						<th>Authors</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>Copyright</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>License</th>
+						<td>
+							
+						</td>
+					</tr>
+				</table>
+				<p class="faint">Generated using the DDOX documentation generator</p>
+			</footer>
+		</div>
+	</body>
+</html>

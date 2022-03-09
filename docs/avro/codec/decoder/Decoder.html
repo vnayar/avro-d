@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Class Decoder</title>
+		<link rel="stylesheet" type="text/css" href="../../../styles/ddox.css"/>
+		<link rel="stylesheet" href="../../../prettify/prettify.css" type="text/css"/>
+		<script type="text/javascript" src="../../../scripts/jquery.js">/**/</script><script type="text/javascript" src="../../../scripts/ddox.js">/**/</script>
+	</head>
+	<body onload="setupDdox();">
+		<nav id="main-nav">
+			<noscript>
+				<p style="color: red">The search functionality needs JavaScript enabled</p>
+			</noscript>
+			<div id="symbolSearchPane" style="display: none">
+				<form action="#" method="GET">
+					<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(40);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();"/>
+				</form>
+				<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../../";
+$('#symbolSearchPane').show();</script>
+			</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">avro
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">codec
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/binarydecoder.html">binarydecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/binaryencoder.html">binaryencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/bufferedoutputrange.html">bufferedoutputrange</a>
+					</div>
+				</li>
+				<li>
+					<div class="module selected">
+						<a href="../../../avro/codec/decoder.html">decoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/encoder.html">encoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/zigzag.html">zigzag</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">generic
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../avro/generic/genericdata.html">genericdata</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/attributes.html">attributes</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/exception.html">exception</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/field.html">field</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/name.html">name</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/orderedmap.html">orderedmap</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/parser.html">parser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/schema.html">schema</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/schematable.html">schematable</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/type.html">type</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+			</ul>
+		</nav>
+		<div id="main-contents">
+			<h1>Class Decoder</h1><p>Low-level support for de-serializing Avro values.
+</p>
+			<div class="prototype">
+				<code class="lang-d">
+					<div class="single-prototype">
+			<span class="kwd">class</span> <span class="typ">Decoder</span>
+			<span class="pun">;</span>
+					</div>
+				</code>
+			</div>
+			<section><p>This class has two types of methods. One type of methods support the reading
+  of leaf values (for example, [Decoder.readLong] and [Decoder.readString]).
+</p>
+
+<p>  The other type of methods support the reading of maps and arrays. These
+  methods are [Decoder.readArrayStart], [Decoder.arrayNext], and similar methods
+  for maps. See [Decoder.readArrayStart] for details on these methods.
+</p>
+</section>
+
+			<section><h2>Methods</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.arrayNext.html" class="public">
+								<code>arrayNext</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Processes the next block of an array and returns the number of items in the
+     block and let's the caller read those items.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.mapNext.html" class="public">
+								<code>mapNext</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Processes the next block of map entries and returns the count of them.
+     Similar to [arrayNext]. See [readMapStart] for details.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readArrayStart.html" class="public">
+								<code>readArrayStart</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads and returns the size of the first block of an array. If this method
+     returns non-zero, then the caller should read the indicated number of items,
+     and then call [arrayNext] to find out the number of items in the next
+     block. The typical pattern for consuming an array looks like:
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readBoolean.html" class="public">
+								<code>readBoolean</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads a boolean value written by [Encoder.writeBoolean].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readBytes.html" class="public">
+								<code>readBytes</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads a byte-string written by [Encoder.writeBytes]. if <code class="lang-d"><span class="pln">old</span></code> is
+     not null and has sufficient capacity to take in the bytes being read, the
+     bytes are returned in <code class="lang-d"><span class="pln">old</span></code>.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readDouble.html" class="public">
+								<code>readDouble</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads a double written by [Encoder.writeDouble].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readEnum.html" class="public">
+								<code>readEnum</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads an enumeration.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readFixed.html" class="public">
+								<code>readFixed</code>
+							</a>
+							<span class="tableEntryAnnotation">(length)</span>
+						</td>
+						<td>Reads fixed sized binary object.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readFloat.html" class="public">
+								<code>readFloat</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads a float written by [Encoder.writeFloat].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readInt.html" class="public">
+								<code>readInt</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads an integer written by [Encoder.writeInt].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readLong.html" class="public">
+								<code>readLong</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads a long written by [Encoder.writeLong].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readMapStart.html" class="public">
+								<code>readMapStart</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads and returns the size of the next block of map-entries. Similar to
+    [readArrayStart].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readNull.html" class="public">
+								<code>readNull</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>"Reads" a null value. (Doesn't actually read anything, but advances the state
+     of the parser if the implementation is stateful.)
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readString.html" class="public">
+								<code>readString</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads a char-string written by [Encoder.writeString].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readUnionIndex.html" class="public">
+								<code>readUnionIndex</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Reads the tag of a union written by [Encoder.writeIndex].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.skipArray.html" class="public">
+								<code>skipArray</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Used for quickly skipping through an array. Note you can either skip the
+     entire array, or read the entire array (with [readArrayStart]), but
+     you can't mix the two on the same array.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.skipBytes.html" class="public">
+								<code>skipBytes</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Discards a byte-string written by [Encoder.writeBytes].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.skipFixed.html" class="public">
+								<code>skipFixed</code>
+							</a>
+							<span class="tableEntryAnnotation">(length)</span>
+						</td>
+						<td>Discards fixed sized binary object.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.skipMap.html" class="public">
+								<code>skipMap</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Support for quickly skipping through a map similar to [skipArray].
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/decoder/Decoder.skipString.html" class="public">
+								<code>skipString</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Discards a char-string written by [Encoder.writeString].
+</td>
+					</tr>
+				</table>
+			</section>
+			
+			<footer>
+				<table class="license-info">
+					<tr>
+						<th>Authors</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>Copyright</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>License</th>
+						<td>
+							
+						</td>
+					</tr>
+				</table>
+				<p class="faint">Generated using the DDOX documentation generator</p>
+			</footer>
+		</div>
+	</body>
+</html>
