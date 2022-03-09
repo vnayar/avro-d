@@ -143,3 +143,7 @@ assert(datum["favorite_color"].getValue!string() == "blue");
 - Object Container Files
 - Protocol wire format
 - Schema Resolution
+
+## API Documentation
+
+Full API documentation can be found here: https://vnayar.github.io/avro-d/
