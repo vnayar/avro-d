@@ -11,8 +11,9 @@ import avro.field : Field;
 import avro.exception : AvroRuntimeException;
 
 /**
-   GenericDatum which can hold any Avro type. The datum has a type and a value. The type is one of
-   the Avro data types. The D type for value corresponds to the Avro type.
+   GenericDatum which can hold any Avro type. The datum has a type and a value.
+
+   The type is one of the Avro data types. The D type for value corresponds to the Avro type.
    - An avro `null` corresponds to no D type. It is illegal to try to access values for `null`.
    - Avro `boolean` maps to D `bool`
    - Avro `int` maps to D `int`.

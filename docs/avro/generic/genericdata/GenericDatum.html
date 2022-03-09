@@ -121,8 +121,17 @@ $('#symbolSearchPane').show();</script>
 			</ul>
 		</nav>
 		<div id="main-contents">
-			<h1>Class GenericDatum</h1><p>GenericDatum which can hold any Avro type. The datum has a type and a value. The type is one of
-   the Avro data types. The D type for value corresponds to the Avro type.
+			<h1>Class GenericDatum</h1><p>GenericDatum which can hold any Avro type. The datum has a type and a value.
+</p>
+			<div class="prototype">
+				<code class="lang-d">
+					<div class="single-prototype">
+			<span class="kwd">class</span> <span class="typ">GenericDatum</span>
+			<span class="pun">;</span>
+					</div>
+				</code>
+			</div>
+			<section><p>The type is one of the Avro data types. The D type for value corresponds to the Avro type.
    - An avro <code class="lang-d"><span class="kwd">null</span></code> corresponds to no D type. It is illegal to try to access values for <code class="lang-d"><span class="kwd">null</span></code>.
    - Avro <code class="lang-d"><span class="pln">boolean</span></code> maps to D <code class="lang-d"><span class="typ">bool</span></code>
    - Avro <code class="lang-d"><span class="typ">int</span></code> maps to D <code class="lang-d"><span class="typ">int</span></code>.
@@ -138,15 +147,8 @@ $('#symbolSearchPane').show();</script>
    - There is no D type corresponding to Avro <code class="lang-d"><span class="kwd">union</span></code>. The object should have the D type
      corresponding to one of the constituent types of the union.
 </p>
-			<div class="prototype">
-				<code class="lang-d">
-					<div class="single-prototype">
-			<span class="kwd">class</span> <span class="typ">GenericDatum</span>
-			<span class="pun">;</span>
-					</div>
-				</code>
-			</div>
-			<section><p>Each GenericDatum holds a value which is set using the <code class="lang-d"><wbr/><span class="pun">.</span><span class="pln">setValue</span><span class="pun">(</span><span class="pln">T</span><span class="pun">)(</span><span class="pln">T val</span><span class="pun">)</span></code> method and retrieved
+
+<p>   Each GenericDatum holds a value which is set using the <code class="lang-d"><wbr/><span class="pun">.</span><span class="pln">setValue</span><span class="pun">(</span><span class="pln">T</span><span class="pun">)(</span><span class="pln">T val</span><span class="pun">)</span></code> method and retrieved
    via the `.getValue!T() method. Because a GenericDatum can store any type, the caller must provide
    the desired type while calling <code class="lang-d"><wbr/><span class="pun">.</span><span class="pln">getValue</span><span class="pun">!</span><span class="pln">T</span><span class="pun">()</span></code>, and this type must match the type of the schema.
 </p>
