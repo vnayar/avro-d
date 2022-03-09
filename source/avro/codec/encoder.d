@@ -125,7 +125,7 @@ abstract class Encoder {
     consisting of an Long field and a Boolean field. Your code would look
     something like this:
 
-    ```
+    ---
     out.writeArrayStart();
     out.setItemCount(list.size());
     foreach (GenericRecord r; list) {
@@ -134,7 +134,7 @@ abstract class Encoder {
       out.writeBoolean(r.boolField);
     }
     out.writeArrayEnd();
-    ```
+    ---
 
     Throws: AvroTypeException If this is a stateful writer and an array is not expected
    */
@@ -177,7 +177,7 @@ abstract class Encoder {
      record consisting of an Long field and a Boolean field. Your code would look
      something like this:
 
-     ```
+     ---
      out.writeMapStart();
      out.setItemCount(list.size());
      foreach (string key, GenericRecord value; map) {
@@ -187,7 +187,7 @@ abstract class Encoder {
        out.writeBoolean(value.getField("boolField").getValue!bool);
      }
      out.writeMapEnd();
-     ```
+     ---
 
      Throws: AvroTypeException If this is a stateful writer and a map is not expected
   */
@@ -210,11 +210,11 @@ abstract class Encoder {
      branch is a record consisting of an Long field and a Boolean field. Your code
      would look something like this:
 
-     ```
+     ---
      out.writeUnionIndex(1);
      out.writeLong(record.getField("longField").getValue!long);
      out.writeBoolean(record.getField("boolField").getValue!bool);
-     ```
+     ---
 
      Throws: AvroTypeException If this is a stateful writer and a map is not expected
   */

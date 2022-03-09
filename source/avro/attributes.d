@@ -6,11 +6,11 @@ module avro.attributes;
    and functions so that the object can represent an arbitrary list of JSON attributes.
 
    To use this mixing, simply call it by name in your class:
-   ```
+   ---
    class MyNode {
      mixin HasJsonAttributes;
    }
-   ```
+   ---
 */
 mixin template HasJsonAttributes() {
   import std.json : JSONValue;

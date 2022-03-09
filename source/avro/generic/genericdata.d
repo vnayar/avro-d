@@ -27,6 +27,51 @@ import avro.exception : AvroRuntimeException;
    - Avro `map` maps to D class `GenericMap`.
    - There is no D type corresponding to Avro `union`. The object should have the D type
      corresponding to one of the constituent types of the union.
+
+   Each GenericDatum holds a value which is set using the `.setValue(T)(T val)` method and retrieved
+   via the `.getValue!T() method. Because a GenericDatum can store any type, the caller must provide
+   the desired type while calling `.getValue!T()`, and this type must match the type of the schema.
+
+   ---
+  Schema schema = parser.parseText(q"EOS
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number", "type": ["int", "null"]},
+     {"name": "scores", "type": {"type": "array", "items": "float"}},
+     {"name": "m", "type": {"type": "map", "values": "long"}}
+ ]
+}
+EOS");
+
+   // Initializes the GenericDatum according to the schema with default values.
+   GenericDatum datum = new GenericDatum(schema);
+   assert(datum.getType == Type.RECORD);
+
+   // Primitive values can be set and retrieved.
+   datum.getValue!(GenericRecord).getField("name").setValue("bob");
+
+   // Convenience shortcut using opIndex() and opAssign() for primitive types.
+   datum["name"] = "bob";
+
+   assert(datum["name"].getValue!string == "bob");
+
+   // Enums have convenience functions directly on GenericData.
+   datum["favorite_number"].setUnionIndex(0);
+   assert(datum["favorite_number"].getUnionIndex() == 0);
+
+   // Arrays also have convenience functions.
+   datum["scores"] ~= 1.23f;
+   datum["scores"] ~= 4.56f;
+   assert(datum["scores"].length == 2);
+
+   // Maps do as well.
+   datum["m"]["m1"] = 10L;
+   datum["m"]["m2"] = 20L;
+   assert(datum["m"]["m1"].getValue!long == 10L);
+   ---
 */
 class GenericDatum {
   private Type type;
@@ -211,12 +256,12 @@ class GenericDatum {
   }
 
   /// Returns true if an only if this datum is a union.
-  bool isUnion() {
+  bool isUnion() const {
     return type == Type.UNION;
   }
 
   /// Returns the index of the current branch, if this is a union.
-  size_t getUnionIndex()
+  size_t getUnionIndex() const
   in (isUnion(), "Cannot get union index on type: " ~ type.to!string)
   {
     return value.get!GenericUnion().getUnionIndex();
@@ -227,6 +272,20 @@ class GenericDatum {
   in (isUnion(), "Cannot set union index on type: " ~ type.to!string)
   {
     value.get!GenericUnion().setUnionIndex(branch);
+  }
+
+  /**
+     A shortcut for .getValue!(GenericType).getValue().length where GenericType is one of
+     GenericArray or GenericMap.
+  */
+  size_t length() const {
+    if (type == Type.ARRAY) {
+      return value.get!(GenericArray).length;
+    } else if (type == Type.MAP) {
+      return value.get!(GenericMap).length;
+    } else {
+      throw new AvroRuntimeException("Cannot use .length() for type " ~ type.to!string);
+    }
   }
 
   override
@@ -294,7 +353,7 @@ class GenericUnion : GenericContainer {
   }
 
   /// Returns the index of the current branch.
-  size_t getUnionIndex() {
+  size_t getUnionIndex() const {
     return unionIndex;
   }
 
@@ -394,6 +453,9 @@ class GenericArray : GenericContainer {
     value[idx] = new GenericDatum(val);
   }
 
+  size_t length() const {
+    return value.length;
+  }
 }
 
 /// A generic container for Avro maps.
@@ -417,6 +479,10 @@ class GenericMap : GenericContainer {
   void opIndexAssign(T)(T val, string name)
   if (isBasicType!T || isSomeString!T) {
     value[name] = new GenericDatum(val);
+  }
+
+  size_t length() const {
+    return value.length;
   }
 }
 

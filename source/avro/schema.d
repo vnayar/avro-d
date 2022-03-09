@@ -244,7 +244,7 @@ public abstract class Schema {
   }
 
   /// If this is an enum, return its default value.
-  public string getEnumDefault() {
+  public string getEnumDefault() const {
     throw new AvroRuntimeException("Not an enum: " ~ this.toString);
   }
 
@@ -262,7 +262,7 @@ public abstract class Schema {
      If this is a record, enum, or fixed, return its name, otherwise return the name of
      the primitive type.
   */
-  public string getName() {
+  public string getName() const {
     import std.uni : toLower;
     return type.to!string.toLower;
   }
@@ -271,12 +271,12 @@ public abstract class Schema {
      If this is a record, enum, or fixed, returns its docstring, if available.
      Otherwise, returns null.
   */
-  public string getDoc() {
+  public string getDoc() const {
     return null;
   }
 
   /** If this is a record, enum or fixed, returns its namespace, if any. */
-  public string getNamespace() {
+  public string getNamespace() const {
     throw new AvroRuntimeException("Not a named type: " ~ typeof(this).stringof);
   }
 
@@ -284,7 +284,7 @@ public abstract class Schema {
      If this is a record, enum or fixed, returns its namespace-qualified name,
      otherwise returns the name of the primitive type.
   */
-  public string getFullname() {
+  public string getFullname() const {
     return getName();
   }
 
@@ -294,12 +294,12 @@ public abstract class Schema {
   }
 
   /// If this is a record, enum, or fixed, return its aliases, if any.
-  public bool[string] getAliases() {
+  public bool[string] getAliases() const {
     throw new AvroRuntimeException("Not a named type: " ~ this.toString);
   }
 
   /// Indicates whether the schema is a both a record an an error type in a protocol.
-  public bool isError() {
+  public bool isError() const {
     throw new AvroRuntimeException("Not a record: " ~ this.toString);
   }
 
@@ -473,22 +473,22 @@ package abstract class NamedSchema : Schema {
   }
 
   override
-  public string getName() {
+  public string getName() const {
     return name.name;
   }
 
   override
-  public string getDoc() {
+  public string getDoc() const {
     return doc;
   }
 
   override
-  public string getNamespace() {
+  public string getNamespace() const {
     return name.namespace;
   }
 
   override
-  public string getFullname() {
+  public string getFullname() const {
     return name.fullname;
   }
 
@@ -556,7 +556,7 @@ package class RecordSchema : NamedSchema {
   }
 
   override
-  public bool isError() {
+  public bool isError() const {
     return _isError;
   }
 }
@@ -628,7 +628,7 @@ package class EnumSchema : NamedSchema {
   }
 
   override
-  public string getEnumDefault() {
+  public string getEnumDefault() const {
     return enumDefault;
   }
 }

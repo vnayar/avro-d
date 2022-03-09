@@ -174,7 +174,7 @@ EOS");
   pragma(msg, "typeof(datum[\"a\"]) = " ~ typeid(typeof(datum["a"])).stringof);
   datum["a"] ~= 1.23f;
   datum["a"] ~= 4.56f;
-  assert(datum["a"].getValue!(GenericArray).getValue().length == 2);
+  assert(datum["a"].length == 2);
   datum["m"]["m1"] = 10L;
   datum["m"]["m2"] = 20L;
   assert(datum["m"]["m1"].getValue!long == 10L);
@@ -186,18 +186,27 @@ EOS");
   GenericWriter writer = new GenericWriter(schema, encoder);
   writer.write(datum);
 
-  assert(data == [
+  assert(data[0..1] == [
   // Field: e
   // idx=1
-      0x02,
+      0x02]);
+  assert(data[1..11] == [
   // Field: a
   // len=2  1.23                    4.56                   len=0
-      0x04, 0xa4, 0x70, 0x9d, 0x3f, 0x85, 0xeb, 0x91, 0x40, 0x00,
+      0x04, 0xa4, 0x70, 0x9d, 0x3f, 0x85, 0xeb, 0x91, 0x40, 0x00]);
+  assert(data[11..12] == [
   // Field: m
-  // len=2 len=2     m     2    20 len=2     m     1    10 len=0
-      0x04, 0x04, 0x6d, 0x32, 0x28, 0x04, 0x6D, 0x31, 0x14, 0x00,
+  // len=2
+      0x04]);
+  assert(data[12..21] == [
+  // len=2     m     2    20 len=2     m     1    10 len=0
+      0x04, 0x6d, 0x32, 0x28, 0x04, 0x6D, 0x31, 0x14, 0x00]
+      || data[12..21] == [
+  // len=2     m     1    10 len=2     m     2    20 len=0
+      0x04, 0x6d, 0x31, 0x14, 0x04, 0x6D, 0x32, 0x28, 0x00]);
+  assert(data[21..25] == [
   // Field: f
   // 4-bytes
-      0x01, 0x02, 0x03, 0x04,
-  ], data.map!(a => format("0x%02x", a)).joiner(" ").to!string);
+      0x01, 0x02, 0x03, 0x04]);
+  //data.map!(a => format("0x%02x", a)).joiner(" ").to!string);
 }
