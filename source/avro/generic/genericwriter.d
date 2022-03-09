@@ -171,7 +171,6 @@ EOS");
   assert(datum.getType == Type.RECORD);
   datum["e"].getValue!(GenericEnum).setSymbol("PARTTIME");
   assert(datum["e"].getValue!(GenericEnum).getValue() == 1);
-  pragma(msg, "typeof(datum[\"a\"]) = " ~ typeid(typeof(datum["a"])).stringof);
   datum["a"] ~= 1.23f;
   datum["a"] ~= 4.56f;
   assert(datum["a"].length == 2);
