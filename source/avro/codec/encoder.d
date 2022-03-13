@@ -61,6 +61,8 @@ abstract class Encoder {
      Throws: AvroTypeException If this is a stateful writer and a char-string is not expected
   */
   abstract void writeString(string str);
+  abstract void writeRecordKey(string key);
+  abstract void writeMapKey(string key);
 
   /**
     Write a byte string.
@@ -103,12 +105,13 @@ abstract class Encoder {
     Writes an enumeration.
 
     Params:
-      e = The ordinal value of an enum to write.
+      e   = The ordinal value of an enum to write.
+      sym = The textual symbol of the enum.
 
     Throws: AvroTypeException If this is a stateful writer and an enumeration is not expected or the
         `e` is out of range.
    */
-  abstract void writeEnum(size_t e);
+  abstract void writeEnum(size_t e, string sym);
 
   /**
     Call this method to start writing an array.
@@ -203,22 +206,35 @@ abstract class Encoder {
   */
   abstract void writeMapEnd();
 
+  /// TODO: Document me.
+  abstract void writeRecordStart();
+
+  /// TODO: Document me.
+  abstract void writeRecordEnd();
+
+  abstract void writeUnionStart();
   /**
      Call this method to write the tag of a union.
 
-     As an example of usage, let's say you want to write a union, whose second
-     branch is a record consisting of an Long field and a Boolean field. Your code
-     would look something like this:
+     As an example of usage, let's say you want to write a union, whose second branch is a record of
+     type "thing" consisting of an Long field and a Boolean field. Your code would look something
+     like this:
 
      ---
-     out.writeUnionIndex(1);
+     out.writeUnionStart();
+     out.writeUnionIndex(1, "thing");
+     out.writeRecordStart();
      out.writeLong(record.getField("longField").getValue!long);
      out.writeBoolean(record.getField("boolField").getValue!bool);
+     out.writeRecordEnd();
+     out.writeUnionEnd();
      ---
 
      Throws: AvroTypeException If this is a stateful writer and a map is not expected
   */
-  abstract void writeUnionIndex(size_t unionIndex);
+  abstract void writeUnionType(size_t unionTypeIndex, string unionTypeName);
+
+  abstract void writeUnionEnd();
 
   /// Empty any internal buffers to the underlying output.
   abstract void flush();

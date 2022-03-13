@@ -8,6 +8,7 @@ import avro.type : Type;
 import avro.schema : Schema;
 import avro.codec.datumwriter : DatumWriter;
 import avro.codec.encoder : Encoder;
+import avro.field : Field;
 
 /// [DatumWriter] for GenericDatum objects.
 class GenericWriter {
@@ -17,7 +18,8 @@ class GenericWriter {
   /// Uses a given encoder to convert a [GenericDatum] into its serialized format.
   static void write(GenericDatum datum, Encoder e) {
     if (datum.isUnion()) {
-      e.writeUnionIndex(datum.getUnionIndex());
+      e.writeUnionStart();
+      e.writeUnionType(datum.getUnionIndex(), datum.getUnionSchema().getFullname());
     }
     switch (datum.getType()) {
       case Type.NULL:
@@ -49,12 +51,21 @@ class GenericWriter {
         break;
       case Type.RECORD:
         auto r = datum.getValue!GenericRecord();
-        for (size_t i = 0; i < r.fieldCount(); i++) {
-          write(r.fieldAt(i), e);
+        e.writeRecordStart();
+        // for (size_t i = 0; i < r.fieldCount(); i++) {
+        //   e.startItem();
+        //   write(r.fieldAt(i), e);
+        // }
+        foreach (const Field f; r.getSchema().getFields()) {
+          e.startItem();
+          e.writeRecordKey(f.getName());
+          write(r.fieldAt(f.getPosition()), e);
         }
+        e.writeRecordEnd();
         break;
       case Type.ENUM:
-        e.writeEnum(datum.getValue!GenericEnum().getValue());
+        GenericEnum ge = datum.getValue!GenericEnum();
+        e.writeEnum(ge.getValue(), ge.getSymbol());
         break;
       case Type.ARRAY:
         GenericDatum[] items = datum.getValue!GenericArray().getValue();
@@ -75,7 +86,7 @@ class GenericWriter {
           e.setItemCount(items.length);
           foreach (key, item; items) {
             e.startItem();
-            e.writeString(key);
+            e.writeMapKey(key);
             write(item, e);
           }
         }
@@ -83,6 +94,9 @@ class GenericWriter {
         break;
       default:
         throw new AvroRuntimeException("Unknown schema type " ~ datum.getType().to!string);
+    }
+    if (datum.isUnion()) {
+      e.writeUnionEnd();
     }
   }
 
@@ -100,6 +114,9 @@ class GenericWriter {
 
 ///
 unittest {
+  import std.format;
+  import std.algorithm;
+
   import std.array : appender;
   import avro.parser : Parser;
   import avro.codec.binaryencoder;
@@ -144,7 +161,7 @@ EOS");
   // Field: favorite_color
   // idx=0 len=4     b     l     u     e
       0x00, 0x08, 0x62, 0x6C, 0x75, 0x65
-  ]);
+  ], data.map!(a => format!("0x%02X")(a)).joiner(" ").to!string);
 }
 
 unittest {

@@ -141,6 +141,15 @@ if (isOutputRange!(ORangeT, ubyte))
     super.writeBytes(bytes);
   }
 
+  override
+  void writeRecordKey(string key) {
+  }
+
+  override
+  void writeMapKey(string key) {
+    writeString(key);
+  }
+
   ///
   unittest {
     import std.array : appender;
@@ -208,7 +217,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   override
-  void writeEnum(size_t e) {
+  void writeEnum(size_t e, string sym) {
     writeInt(e.to!int);
   }
 
@@ -218,9 +227,9 @@ if (isOutputRange!(ORangeT, ubyte))
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
     with (encoder) {
-      writeEnum(0);
+      writeEnum(0, "ham");
       assert(data == [0x00]);
-      writeEnum(3);
+      writeEnum(3, "bird");
       assert(data == [0x00, 0x06]);
     }
   }
@@ -309,8 +318,24 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   override
-  void writeUnionIndex(size_t unionIndex) {
-    writeInt(unionIndex.to!int);
+  void writeRecordStart() {
+  }
+
+  override
+  void writeRecordEnd() {
+  }
+
+  override
+  void writeUnionStart() {
+  }
+
+  override
+  void writeUnionType(size_t unionTypeIndex, string unionTypeName) {
+    writeInt(unionTypeIndex.to!int);
+  }
+
+  override
+  void writeUnionEnd() {
   }
 
   override

@@ -268,6 +268,12 @@ class GenericDatum {
     return value.get!GenericUnion().getUnionIndex();
   }
 
+  const(Schema) getUnionSchema() const
+  in (isUnion(), "Cannot get union schema on type: " ~ type.to!string)
+  {
+    return value.get!GenericUnion().getSchema();
+  }
+
   /// Selects a new branch in the union if this is a union.
   void setUnionIndex(size_t branch)
   in (isUnion(), "Cannot set union index on type: " ~ type.to!string)
