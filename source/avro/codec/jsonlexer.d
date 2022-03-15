@@ -1,4 +1,5 @@
-module avro.codec.jsonparser;
+/// Logic for parsing JSON
+module avro.codec.jsonlexer;
 
 import std.conv;
 import std.traits : isSomeChar;
@@ -7,8 +8,8 @@ import std.range;
 
 import avro.codec.jsonutil : decodeJsonString;
 
-/// Exceptions related to incremental parsing in [JsonParser].
-class JsonParseException : Exception {
+/// Exceptions related to incremental parsing in [JsonLexer].
+class JsonLexException : Exception {
   this(string msg, Throwable nextInChain = null, string file = __FILE__, size_t line = __LINE__) {
     super(msg, file, line, nextInChain);
   }
@@ -26,8 +27,8 @@ enum Token {
   OBJECT_END
 }
 
-/// A JSON pull-parser that allows tokens to be processed as they are read.
-class JsonParser(IRangeT)
+/// A JSON lexer that allows tokens to be processed as they are read.
+class JsonLexer(IRangeT)
 if (isInputRange!(IRangeT) && isSomeChar!(ElementType!IRangeT))
 {
   size_t line() const {
@@ -73,7 +74,7 @@ if (isInputRange!(IRangeT) && isSomeChar!(ElementType!IRangeT))
           return;
         }
       }
-      throw new JsonParseException("Incorrect token in the stream. Expected: " ~ tk.to!string
+      throw new JsonLexException("Incorrect token in the stream. Expected: " ~ tk.to!string
           ~ ", found " ~ cur().to!string);
     }
   }
@@ -143,7 +144,7 @@ if (isInputRange!(IRangeT) && isSomeChar!(ElementType!IRangeT))
     return ch;
   }
 
-  /// Reads input characters, updates the parser state, and returns the next [Token].
+  /// Reads input characters, updates the lexer state, and returns the next [Token].
   Token doAdvance() {
     dchar ch = next();
     if (ch == ']') {
@@ -237,7 +238,7 @@ if (isInputRange!(IRangeT) && isSomeChar!(ElementType!IRangeT))
     return tk;
   }
 
-  /// Consumes characters in order to parse a number.
+  /// Consumes characters in order to identify a number.
   Token tryNumber(dchar ch) {
     sv = "";
     sv ~= ch;
@@ -349,7 +350,7 @@ if (isInputRange!(IRangeT) && isSomeChar!(ElementType!IRangeT))
           }
           break;
         default:
-          throw new JsonParseException("Unexpected JSON parse state");
+          throw new JsonLexException("Unexpected JSON lex state");
       }
       if (state == 1 || state == 2 || state == 4 || state == 7) {
         if (hasNext) {
@@ -366,7 +367,7 @@ if (isInputRange!(IRangeT) && isSomeChar!(ElementType!IRangeT))
         if (hasNext) {
           throw unexpected(ch);
         } else {
-          throw new JsonParseException("Unexpected EOF");
+          throw new JsonLexException("Unexpected EOF");
         }
       }
     }
@@ -420,14 +421,14 @@ if (isInputRange!(IRangeT) && isSomeChar!(ElementType!IRangeT))
     }
   }
 
-  JsonParseException unexpected(dchar ch) {
-    return new JsonParseException("Unexpected character in json '" ~ ch.to!string ~ "'.");
+  JsonLexException unexpected(dchar ch) {
+    return new JsonLexException("Unexpected character in json '" ~ ch.to!string ~ "'.");
   }
 }
 
-/// Convenience function to create a [JsonParser] and infer the range type.
-auto jsonParser(IRangeT)(IRangeT iRange) {
-  return new JsonParser!IRangeT(iRange);
+/// Convenience function to create a [JsonLexer] and infer the range type.
+auto jsonLexer(IRangeT)(IRangeT iRange) {
+  return new JsonLexer!IRangeT(iRange);
 }
 
 ///
@@ -437,7 +438,7 @@ unittest {
   struct Test {
     string text;
     Token expected;
-    bool function(JsonParser!string) parserValidator;
+    bool function(JsonLexer!string) lexerValidator;
   }
 
   Test[] tests = [
@@ -455,50 +456,50 @@ unittest {
       Test("\"b\\t\\u25BDb\"", Token.STRING, (p) => p.stringValue() == "b\t▽b"),
     ];
   foreach (size_t i, Test test; tests) {
-    auto parser = jsonParser(test.text);
-    assertNotThrown(parser.expectToken(test.expected), "Invalid token in test " ~ i.to!string);
-    assert(test.parserValidator(parser), "Parser invalid in test " ~ i.to!string);
+    auto lexer = jsonLexer(test.text);
+    assertNotThrown(lexer.expectToken(test.expected), "Invalid token in test " ~ i.to!string);
+    assert(test.lexerValidator(lexer), "Lexer invalid in test " ~ i.to!string);
   }
 }
 
 ///
 unittest {
-  auto parser = jsonParser(" [\"b[ob\" ,\"h]am\"] ");
-  parser.expectToken(Token.ARRAY_START);
-  parser.expectToken(Token.STRING);
-  parser.expectToken(Token.STRING);
-  parser.expectToken(Token.ARRAY_END);
+  auto lexer = jsonLexer(" [\"b[ob\" ,\"h]am\"] ");
+  lexer.expectToken(Token.ARRAY_START);
+  lexer.expectToken(Token.STRING);
+  lexer.expectToken(Token.STRING);
+  lexer.expectToken(Token.ARRAY_END);
 }
 
 ///
 unittest {
-  auto parser = jsonParser("{\n  \"a\" : \"b[]{}ob\"\n ,\"b\" : \"h{[]}m\"} ");
-  parser.expectToken(Token.OBJECT_START);
-  parser.expectToken(Token.STRING);
-  parser.expectToken(Token.STRING);
-  parser.expectToken(Token.STRING);
-  parser.expectToken(Token.STRING);
-  parser.expectToken(Token.OBJECT_END);
+  auto lexer = jsonLexer("{\n  \"a\" : \"b[]{}ob\"\n ,\"b\" : \"h{[]}m\"} ");
+  lexer.expectToken(Token.OBJECT_START);
+  lexer.expectToken(Token.STRING);
+  lexer.expectToken(Token.STRING);
+  lexer.expectToken(Token.STRING);
+  lexer.expectToken(Token.STRING);
+  lexer.expectToken(Token.OBJECT_END);
 }
 
 ///
 unittest {
   import std.exception : assertThrown;
-  auto parser = jsonParser(" [\"b[ob\" ,\"h]am\"] ");
-  assertThrown!JsonParseException(parser.expectToken(Token.OBJECT_START));
+  auto lexer = jsonLexer(" [\"b[ob\" ,\"h]am\"] ");
+  assertThrown!JsonLexException(lexer.expectToken(Token.OBJECT_START));
 }
 
 ///
 unittest {
-  auto parser = jsonParser("{\n  \"a\" : \"b[]{}ob\"\n ,\"b\" : \"h{[]}m\"} ");
-  assert(parser.peek() == Token.OBJECT_START);
-  assert(parser.peek() == Token.OBJECT_START);
-  assert(parser.advance() == Token.OBJECT_START);
-  assert(parser.advance() == Token.STRING);
-  assert(parser.advance() == Token.STRING);
-  assert(parser.peek() == Token.STRING);
-  assert(parser.peek() == Token.STRING);
-  assert(parser.advance() == Token.STRING);
-  assert(parser.advance() == Token.STRING);
-  assert(parser.advance() == Token.OBJECT_END);
+  auto lexer = jsonLexer("{\n  \"a\" : \"b[]{}ob\"\n ,\"b\" : \"h{[]}m\"} ");
+  assert(lexer.peek() == Token.OBJECT_START);
+  assert(lexer.peek() == Token.OBJECT_START);
+  assert(lexer.advance() == Token.OBJECT_START);
+  assert(lexer.advance() == Token.STRING);
+  assert(lexer.advance() == Token.STRING);
+  assert(lexer.peek() == Token.STRING);
+  assert(lexer.peek() == Token.STRING);
+  assert(lexer.advance() == Token.STRING);
+  assert(lexer.advance() == Token.STRING);
+  assert(lexer.advance() == Token.OBJECT_END);
 }
