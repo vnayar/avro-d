@@ -396,6 +396,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
   }
 }
 
+/// Convenience function to create a [BinaryDecoder] and infer the range type.
 auto binaryDecoder(IRangeT)(IRangeT iRange) {
   return new BinaryDecoder!IRangeT(iRange);
 }
