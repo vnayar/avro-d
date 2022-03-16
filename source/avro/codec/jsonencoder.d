@@ -154,7 +154,7 @@ if (isOutputRange!(ORangeT, char))
 
   override
   void writeUnionStart() {
-    writeMapStart();
+    put(oRange, "{");
   }
 
   override

@@ -55,6 +55,21 @@ $('#symbolSearchPane').show();</script>
 				</li>
 				<li>
 					<div class="module ">
+						<a href="../../../avro/codec/jsondecoder.html">jsondecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/jsonencoder.html">jsonencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/jsonlexer.html">jsonlexer</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
 						<a href="../../../avro/codec/zigzag.html">zigzag</a>
 					</div>
 				</li>
@@ -149,24 +164,13 @@ $('#symbolSearchPane').show();</script>
 					</tr>
 					<tr>
 						<td>
-							<a href="../../../avro/codec/decoder/Decoder.arrayNext.html" class="public">
-								<code>arrayNext</code>
+							<a href="../../../avro/codec/decoder/Decoder.readArrayNext.html" class="public">
+								<code>readArrayNext</code>
 							</a>
 							<span class="tableEntryAnnotation">()</span>
 						</td>
 						<td>Processes the next block of an array and returns the number of items in the
      block and let's the caller read those items.
-</td>
-					</tr>
-					<tr>
-						<td>
-							<a href="../../../avro/codec/decoder/Decoder.mapNext.html" class="public">
-								<code>mapNext</code>
-							</a>
-							<span class="tableEntryAnnotation">()</span>
-						</td>
-						<td>Processes the next block of map entries and returns the count of them.
-     Similar to [arrayNext]. See [readMapStart] for details.
 </td>
 					</tr>
 					<tr>
@@ -219,7 +223,7 @@ $('#symbolSearchPane').show();</script>
 							<a href="../../../avro/codec/decoder/Decoder.readEnum.html" class="public">
 								<code>readEnum</code>
 							</a>
-							<span class="tableEntryAnnotation">()</span>
+							<span class="tableEntryAnnotation">(enumSchema)</span>
 						</td>
 						<td>Reads an enumeration.
 </td>
@@ -266,6 +270,17 @@ $('#symbolSearchPane').show();</script>
 					</tr>
 					<tr>
 						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readMapNext.html" class="public">
+								<code>readMapNext</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td>Processes the next block of map entries and returns the count of them.
+     Similar to [arrayNext]. See [readMapStart] for details.
+</td>
+					</tr>
+					<tr>
+						<td>
 							<a href="../../../avro/codec/decoder/Decoder.readMapStart.html" class="public">
 								<code>readMapStart</code>
 							</a>
@@ -298,10 +313,19 @@ $('#symbolSearchPane').show();</script>
 					</tr>
 					<tr>
 						<td>
+							<a href="../../../avro/codec/decoder/Decoder.readUnionEnd.html" class="public">
+								<code>readUnionEnd</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>
 							<a href="../../../avro/codec/decoder/Decoder.readUnionIndex.html" class="public">
 								<code>readUnionIndex</code>
 							</a>
-							<span class="tableEntryAnnotation">()</span>
+							<span class="tableEntryAnnotation">(unionSchema)</span>
 						</td>
 						<td>Reads the tag of a union written by [Encoder.writeIndex].
 </td>

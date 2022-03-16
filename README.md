@@ -134,11 +134,54 @@ assert(datum["favorite_number"].getValue!int() == 8);
 assert(datum["favorite_color"].getValue!string() == "blue");
 ```
 
+### JSON Serialization/Deserialization
+
+`GenericData` objects can be written using an encoder.
+
+The following example shows data being written using a schema:
+
+The following example shows data being read using a schema:
+```d
+import avro.codec.jsondecoder;
+
+string data = q"EOS
+{
+  "name": "bob",
+  "favorite_number": {"int": 8},
+  "favorite_color": null
+}
+EOS";
+auto decoder = jsonDecoder(data);
+GenericReader reader = new GenericReader(schema, decoder);
+GenericDatum datum;
+reader.read(datum);
+
+assert(datum["name"].getValue!string() == "bob");
+assert(datum["favorite_number"].getValue!int() == 8);
+assert(datum["favorite_color"].getType() == Type.NULL);
+```
+
+The following example shows data being written to JSON:
+```d
+GenericDatum datum = new GenericDatum(schema);
+datum["name"].setValue("bob");
+datum["favorite_number"].setUnionIndex(0);
+datum["favorite_number"].setValue(8);
+datum["favorite_color"].setUnionIndex(1);
+
+string data;
+auto encoder = jsonEncoder(appender(&data));
+GenericWriter writer = new GenericWriter(schema, encoder);
+writer.write(datum);
+
+assert(parseJSON(data) == parseJSON(
+    `{"name": "bob", "favorite_number": {"int": 8}, "favorite_color": { "null": null } }`));
+```
+
 ## Features Not Yet Implemented
 
 - Logical Type support
 - Specific Data types generated for schemas
-- JSON Serialization/Deserialization
 - Codex compression support
 - Object Container Files
 - Protocol wire format

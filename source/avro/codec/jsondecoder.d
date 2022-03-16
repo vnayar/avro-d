@@ -1,3 +1,4 @@
+/// A decoder for processing JSON Avro input.
 module avro.codec.jsondecoder;
 
 import std.conv;

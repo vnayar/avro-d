@@ -19,7 +19,8 @@ class GenericWriter {
   static void write(GenericDatum datum, Encoder e) {
     if (datum.isUnion()) {
       e.writeUnionStart();
-      e.writeUnionType(datum.getUnionIndex(), datum.getUnionSchema().getFullname());
+      size_t unionIndex = datum.getUnionIndex();
+      e.writeUnionType(unionIndex, datum.getUnionSchema().getTypes()[unionIndex].getFullname());
     }
     switch (datum.getType()) {
       case Type.NULL:
@@ -225,4 +226,42 @@ EOS");
   // 4-bytes
       0x01, 0x02, 0x03, 0x04]);
   //data.map!(a => format("0x%02x", a)).joiner(" ").to!string);
+}
+
+///
+unittest {
+  import std.format;
+  import std.algorithm;
+  import std.json : parseJSON;
+  import std.array : appender;
+
+  import avro.parser : Parser;
+  import avro.codec.jsonencoder : jsonEncoder;
+
+  auto parser = new Parser();
+  Schema schema = parser.parseText(q"EOS
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number", "type": ["int", "null"]},
+     {"name": "favorite_color", "type": ["string", "null"]}
+ ]
+}
+EOS");
+  GenericDatum datum = new GenericDatum(schema);
+  datum["name"].setValue("bob");
+  datum["favorite_number"].setUnionIndex(0);
+  datum["favorite_number"].setValue(8);
+  datum["favorite_color"].setUnionIndex(1);
+  //datum["favorite_color"].setValue("blue");
+
+  string data;
+  auto encoder = jsonEncoder(appender(&data));
+  GenericWriter writer = new GenericWriter(schema, encoder);
+  writer.write(datum);
+
+  assert(parseJSON(data) == parseJSON(
+      `{"name": "bob", "favorite_number": {"int": 8}, "favorite_color": { "null": null } }`));
 }

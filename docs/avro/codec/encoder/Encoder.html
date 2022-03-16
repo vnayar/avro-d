@@ -55,6 +55,21 @@ $('#symbolSearchPane').show();</script>
 				</li>
 				<li>
 					<div class="module ">
+						<a href="../../../avro/codec/jsondecoder.html">jsondecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/jsonencoder.html">jsonencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/jsonlexer.html">jsonlexer</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
 						<a href="../../../avro/codec/zigzag.html">zigzag</a>
 					</div>
 				</li>
@@ -252,7 +267,7 @@ $('#symbolSearchPane').show();</script>
 							<a href="../../../avro/codec/encoder/Encoder.writeEnum.html" class="public">
 								<code>writeEnum</code>
 							</a>
-							<span class="tableEntryAnnotation">(e)</span>
+							<span class="tableEntryAnnotation">(e, sym)</span>
 						</td>
 						<td>Writes an enumeration.
 </td>
@@ -341,6 +356,24 @@ $('#symbolSearchPane').show();</script>
 					</tr>
 					<tr>
 						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeRecordEnd.html" class="public">
+								<code>writeRecordEnd</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../avro/codec/encoder/Encoder.writeRecordStart.html" class="public">
+								<code>writeRecordStart</code>
+							</a>
+							<span class="tableEntryAnnotation">()</span>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>
 							<a href="../../../avro/codec/encoder/Encoder.writeString.html" class="public">
 								<code>writeString</code>
 							</a>
@@ -351,10 +384,10 @@ $('#symbolSearchPane').show();</script>
 					</tr>
 					<tr>
 						<td>
-							<a href="../../../avro/codec/encoder/Encoder.writeUnionIndex.html" class="public">
-								<code>writeUnionIndex</code>
+							<a href="../../../avro/codec/encoder/Encoder.writeUnionType.html" class="public">
+								<code>writeUnionType</code>
 							</a>
-							<span class="tableEntryAnnotation">(unionIndex)</span>
+							<span class="tableEntryAnnotation">(unionTypeIndex, unionTypeName)</span>
 						</td>
 						<td>Call this method to write the tag of a union.
 </td>

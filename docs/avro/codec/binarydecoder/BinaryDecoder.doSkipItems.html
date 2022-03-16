@@ -55,6 +55,21 @@ $('#symbolSearchPane').show();</script>
 				</li>
 				<li>
 					<div class="module ">
+						<a href="../../../avro/codec/jsondecoder.html">jsondecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/jsonencoder.html">jsonencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/jsonlexer.html">jsonlexer</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
 						<a href="../../../avro/codec/zigzag.html">zigzag</a>
 					</div>
 				</li>
@@ -156,7 +171,7 @@ $('#symbolSearchPane').show();</script>
 
 <pre class="code"><code class="lang-d"><span class="com">//                 4    -3    16
 </span><span class="typ">ubyte</span><span class="pun">[] </span><span class="pln">data </span><span class="pun">= [</span><span class="lit">0x08</span><span class="pun">, </span><span class="lit">0x05</span><span class="pun">, </span><span class="lit">0x20</span><span class="pun">, </span><span class="lit">0x65</span><span class="pun">];
-</span><span class="kwd">auto </span><span class="pln">decoder </span><span class="pun">= </span><span class="pln">binaryDecoder</span><span class="pun">(</span><span class="pln">data</span><span class="pun">);
+</span><span class="kwd">auto </span><span class="pln">decoder </span><span class="pun">= <a href="../../../avro/codec/binarydecoder/binaryDecoder.html"></span><span class="pln">binaryDecoder</span></a><span class="pun">(</span><span class="pln">data</span><span class="pun">);
 </span><span class="kwd">with </span><span class="pun">(</span><span class="pln">decoder</span><span class="pun">) {
   </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">readArrayStart</span><span class="pun">() == </span><span class="lit">4</span><span class="pun">);
   </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">readArrayStart</span><span class="pun">() == </span><span class="lit">3</span><span class="pun">);

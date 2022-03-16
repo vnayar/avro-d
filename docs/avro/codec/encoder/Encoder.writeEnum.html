@@ -55,6 +55,21 @@ $('#symbolSearchPane').show();</script>
 				</li>
 				<li>
 					<div class="module ">
+						<a href="../../../avro/codec/jsondecoder.html">jsondecoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/jsonencoder.html">jsonencoder</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../avro/codec/jsonlexer.html">jsonlexer</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
 						<a href="../../../avro/codec/zigzag.html">zigzag</a>
 					</div>
 				</li>
@@ -129,7 +144,9 @@ $('#symbolSearchPane').show();</script>
 			<span class="kwd">abstract </span><span class="typ">void</span> <span class="pln">writeEnum</span>
 			<span class="pun">(</span>
 			<br/>
-			&nbsp;&nbsp;<span class="typ">ulong</span> <span class="pln">e</span>
+			&nbsp;&nbsp;<span class="typ">ulong</span> <span class="pln">e</span><span class="pun">,</span>
+			<br/>
+			&nbsp;&nbsp;<span class="typ">string</span> <span class="pln">sym</span>
 			<br/>
 			<span class="pun">)</span><span class="pun">;</span>
 					</div>
@@ -140,6 +157,7 @@ $('#symbolSearchPane').show();</script>
 			<section><h2>Parameters</h2>
 <table><col class="caption"><tr><th>Name</th><th>Description</th></tr>
 <tr><td id="e">e</td><td> The ordinal value of an enum to write.</td></tr>
+<tr><td id="sym">sym</td><td> The textual symbol of the enum.</td></tr>
 </table>
 </section>
 <section><h2>Throws</h2>
