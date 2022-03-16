@@ -150,6 +150,16 @@
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericUnion.getUnionIndex.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericUnion.setUnionIndex.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericUnion.this.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericreader.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericreader/GenericReader.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericreader/GenericReader.read.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericreader/GenericReader.read.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericreader/GenericReader.this.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericwriter.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericwriter/GenericWriter.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericwriter/GenericWriter.this.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericwriter/GenericWriter.write.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericwriter/GenericWriter.write.html</loc></url>
 <url><loc>http://127.0.0.1/avro/attributes.html</loc></url>
 <url><loc>http://127.0.0.1/avro/attributes/HasJsonAttributes.html</loc></url>
 <url><loc>http://127.0.0.1/avro/attributes/HasJsonAttributes.addAttribute.html</loc></url>

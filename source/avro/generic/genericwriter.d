@@ -1,3 +1,4 @@
+/// Tools for writing [GenericDatum] using an encoder.
 module avro.generic.genericwriter;
 
 import std.conv : to;

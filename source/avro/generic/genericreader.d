@@ -1,3 +1,4 @@
+/// Tools for reading [GenericDatum] using an decoder.
 module avro.generic.genericreader;
 
 import std.conv : to;
