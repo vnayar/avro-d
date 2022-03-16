@@ -319,7 +319,7 @@ public abstract class Schema {
   }
 
   /// If this is a union, return the branch with the provided full name.
-  public size_t getIndexNamed(string name) {
+  public size_t getIndexNamed(string name) const {
     throw new AvroRuntimeException("Not a union: " ~ this.toString);
   }
 
@@ -624,7 +624,10 @@ package class EnumSchema : NamedSchema {
 
   override
   public size_t getEnumOrdinal(string symbol) const {
-    return ordinals[symbol];
+    if (symbol in ordinals)
+      return ordinals[symbol];
+    else
+      throw new AvroRuntimeException("Unrecognized enum symbol: " ~ symbol);
   }
 
   override
@@ -739,7 +742,7 @@ package class UnionSchema : Schema {
   }
 
   override
-  public size_t getIndexNamed(string name) {
+  public size_t getIndexNamed(string name) const {
     return indexByName[name];
   }
 }

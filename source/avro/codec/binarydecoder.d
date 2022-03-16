@@ -4,10 +4,16 @@ module avro.codec.binarydecoder;
 import std.conv : to, ConvOverflowException;
 import std.range;
 import std.string : assumeUTF;
-import std.exception : assertThrown;
+
+import avro.schema : Schema;
 import avro.codec.zigzag : decodeZigzagLong;
 import avro.codec.decoder : Decoder;
 import avro.exception : AvroRuntimeException, InvalidNumberEncodingException;
+
+version (unittest) {
+  import std.exception : assertThrown;
+}
+
 
 /**
    A [Decoder] for binary-format data.
@@ -243,8 +249,20 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
 
   /// See_Also: [readInt]
   override
-  size_t readEnum() {
+  size_t readEnum(const Schema enumSchema) {
     return readInt();
+  }
+
+  override
+  void readRecordStart() {
+  }
+
+  override
+  void readRecordKey() {
+  }
+
+  override
+  void readRecordEnd() {
   }
 
   private void doSkipBytes(size_t length) {
@@ -322,7 +340,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
 
   /// See_Also: readArrayStart
   override
-  size_t arrayNext() {
+  size_t readArrayNext() {
     return doReadItemCount();
   }
 
@@ -354,7 +372,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
 
   /// See_Also: readArrayStart
   override
-  size_t mapNext() {
+  size_t readMapNext() {
     return doReadItemCount();
   }
 
@@ -366,8 +384,12 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
 
   /// See_Also: [readInt]
   override
-  size_t readUnionIndex() {
+  size_t readUnionIndex(const Schema unionSchema) {
     return readInt();
+  }
+
+  override
+  void readUnionEnd() {
   }
 
   private size_t doReadLength() {

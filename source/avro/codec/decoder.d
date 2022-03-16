@@ -1,6 +1,8 @@
 /// Support logic for deserializing Avro values.
 module avro.codec.decoder;
 
+import avro.schema : Schema;
+
 /**
   Low-level support for de-serializing Avro values.
 
@@ -136,7 +138,13 @@ abstract class Decoder {
        the type of the next value to be read.
      - IOException
   */
-  abstract size_t readEnum();
+  abstract size_t readEnum(const Schema enumSchema);
+
+  abstract void readRecordStart();
+
+  abstract void readRecordKey();
+
+  abstract void readRecordEnd();
 
   /**
      Reads and returns the size of the first block of an array. If this method
@@ -163,7 +171,7 @@ abstract class Decoder {
 
      Throws: AvroTypeException When called outside of an array context
   */
-  abstract size_t arrayNext();
+  abstract size_t readArrayNext();
 
   /**
      Used for quickly skipping through an array. Note you can either skip the
@@ -225,7 +233,7 @@ abstract class Decoder {
 
      Throws: AvroTypeException When called outside of a map context
   */
-  abstract size_t mapNext();
+  abstract size_t readMapNext();
 
   /**
      Support for quickly skipping through a map similar to [skipArray].
@@ -255,6 +263,9 @@ abstract class Decoder {
      Throws: AvroTypeException If this is a stateful reader and union is not the
      type of the next value to be read
   */
-  abstract size_t readUnionIndex();
+  abstract size_t readUnionIndex(const Schema unionSchema);
+
+  /// TODO: Document me.
+  abstract void readUnionEnd();
 }
 

@@ -17,7 +17,7 @@ class GenericReader {
   /// Uses a given decoder to read [GenericDatum] from its serialized format.
   static void read(Decoder d, bool isResolving, GenericDatum datum) {
     if (datum.isUnion()) {
-      datum.setUnionIndex(d.readUnionIndex());
+      datum.setUnionIndex(d.readUnionIndex(datum.getUnionSchema()));
     }
     switch (datum.getType()) {
       case Type.NULL:
@@ -54,13 +54,17 @@ class GenericReader {
           // TODO
           throw new Exception("Not implemented!");
         } else {
+          d.readRecordStart();
           for (size_t i = 0; i < r.fieldCount(); i++) {
+            d.readRecordKey();
             read(d, isResolving, r.fieldAt(i));
           }
+          d.readRecordEnd();
         }
         break;
       case Type.ENUM:
-        datum.getValue!GenericEnum.setEnumOrdinal(d.readEnum());
+        auto enumDatum = datum.getValue!GenericEnum();
+        enumDatum.setEnumOrdinal(d.readEnum(enumDatum.getSchema()));
         break;
       case Type.ARRAY:
         auto v = datum.getValue!GenericArray();
@@ -68,7 +72,7 @@ class GenericReader {
         const(Schema) elemSchema = v.getSchema().getElementSchema();
         arr.length = 0;
         size_t start = 0;
-        for (size_t m = d.readArrayStart(); m != 0; m = d.arrayNext()) {
+        for (size_t m = d.readArrayStart(); m != 0; m = d.readArrayNext()) {
           arr.length += m;
           for (; start < arr.length; ++start) {
             arr[start] = new GenericDatum(elemSchema);
@@ -82,7 +86,7 @@ class GenericReader {
         const(Schema) valueSchema = v.getSchema().getValueSchema();
         r.clear();
         size_t start = 0;
-        for (size_t m = d.readMapStart(); m != 0; m = d.mapNext()) {
+        for (size_t m = d.readMapStart(); m != 0; m = d.readMapNext()) {
           for (size_t j = 0; j < m; j++) {
             string key = d.readString();
             GenericDatum value = new GenericDatum(valueSchema);
@@ -94,6 +98,9 @@ class GenericReader {
         break;
       default:
         throw new Exception("Unknown schema type: " ~ datum.getType().to!string);
+    }
+    if (datum.isUnion() && datum.getType() != Type.NULL) {
+      d.readUnionEnd();
     }
   }
 
@@ -126,7 +133,6 @@ class GenericReader {
 
 ///
 unittest {
-  import std.stdio;
   import avro.parser : Parser;
   import avro.codec.binarydecoder;
 
@@ -164,3 +170,38 @@ EOS");
   assert(datum["favorite_color"].getValue!string() == "blue");
 }
 
+///
+unittest {
+  import std.stdio;
+  import avro.parser : Parser;
+  import avro.codec.jsondecoder;
+
+  auto parser = new Parser();
+  Schema schema = parser.parseText(q"EOS
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number", "type": ["int", "null"]},
+     {"name": "favorite_color", "type": ["string", "null"]}
+ ]
+}
+EOS");
+
+  string data = q"EOS
+{
+  "name": "bob",
+  "favorite_number": {"int": 8},
+  "favorite_color": null
+}
+EOS";
+  auto decoder = jsonDecoder(data);
+  GenericReader reader = new GenericReader(schema, decoder);
+  GenericDatum datum;
+  reader.read(datum);
+
+  assert(datum["name"].getValue!string() == "bob");
+  assert(datum["favorite_number"].getValue!int() == 8);
+  assert(datum["favorite_color"].getType() == Type.NULL);
+}
