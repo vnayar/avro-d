@@ -29,14 +29,14 @@ mixin template HasJsonAttributes() {
        name  = The name of the property to add
        value = The value for the property to add
   */
-  public void addAttribute(T)(string name, T value) {
+  void addAttribute(T)(string name, T value) {
     if (name in attributes)
       throw new AvroRuntimeException("Can't overwrite property: " ~ name);
     attributes[name] = JSONValue(value);
   }
 
   /// Retrieve a map from JSON attribute names to their JSONValues.
-  OrderedMap!(string, JSONValue) getAttributes() {
+  const(OrderedMap!(string, JSONValue)) getAttributes() const {
     return attributes;
   }
 }
