@@ -10,6 +10,8 @@
 */
 module avro.codec.zigzag;
 
+@safe:
+
 /// Perform zig-zag encoding for a 64-bit long.
 ulong encodeZigzagLong(long input) nothrow pure {
   return ((input << 1) ^ (input >> 63));

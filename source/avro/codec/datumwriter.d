@@ -2,6 +2,8 @@ module avro.codec.datumwriter;
 
 import avro.schema;
 
+@safe:
+
 /**
    Write data of a schema.
 

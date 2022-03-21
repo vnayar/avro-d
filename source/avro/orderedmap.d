@@ -3,6 +3,8 @@ module avro.orderedmap;
 
 import core.exception : AssertError;
 
+@safe:
+
 /**
    An associative array that permits access to ordered keys.
 
@@ -55,7 +57,7 @@ struct OrderedMap(KeyT, ValueT) {
 
   /// Removes all map keys and clears the orderedKeys.
   void clear() {
-    map.clear;
+    map = null;
     orderedKeys.length = 0;
   }
 
@@ -71,7 +73,7 @@ struct OrderedMap(KeyT, ValueT) {
 }
 
 /// Initializing from an unordered map is not allowed.
-unittest {
+@trusted unittest {
   import std.exception : assertThrown;
   OrderedMap!(string, int) omap;
   assertThrown!AssertError(omap = ["a": 1, "b": 2]);

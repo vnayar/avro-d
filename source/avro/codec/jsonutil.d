@@ -1,8 +1,14 @@
 module avro.codec.jsonutil;
 
-import std.range : empty, popFront, popFrontN, front, takeExactly;
-import std.format : format, formattedRead, FormatException;
+import std.algorithm : fold;
 import std.array : appender;
+import std.array : array;
+import std.conv : to;
+import std.format : format, FormatException;
+import std.range : empty, popFront, popFrontN, front, takeExactly;
+import std.uni : toLower;
+
+@safe:
 
 /**
    Encodes a string so that it may be used as a JSON-string value.
@@ -118,7 +124,7 @@ string decodeJsonString(string str) {
         case 'u':
           if (str.length < 4)
             throw new FormatException("JSON Parse exception, \\u should have 4 digits.");
-          formattedRead!("%x")(str.takeExactly(4), &ch);
+          ch = str.takeExactly(4).array.hexStrToInt();
           str.popFrontN(4);
           buf ~= ch;
           break;
@@ -138,5 +144,32 @@ unittest {
   assert((val = decodeJsonString("\\b\\t\\\"\\/j'\\f\\n\\r\\u0000")) == "\b\t\"/j'\f\n\r\0", val);
   assert((val = decodeJsonString("Grüßen")) == "Grüßen", val);
   assert((val = decodeJsonString("あいさつ")) == "あいさつ", val);
+}
+
+int hexCharToInt(dchar c) {
+  c = toLower(c);
+  if (c >= '0' && c <= '9')
+    return c - '0';
+  else if (c >= 'a' && c <= 'z')
+    return c - 'a' + 10;
+  else
+    throw new FormatException("Cannot decode hex character: " ~ c.to!char);
+}
+
+unittest {
+  int val;
+  assert((val = hexCharToInt('a')) == 10, val.to!string);
+  assert((val = hexCharToInt('3')) == 3, val.to!string);
+  assert((val = hexCharToInt('f')) == 15, val.to!string);
+}
+
+int hexStrToInt(const dchar[] hex) {
+  return hex
+      .fold!((result, c) => (result << 4) + hexCharToInt(c))(0);
+}
+
+unittest {
+  int val;
+  assert((val = hexStrToInt("3a"d)) == 58, val.to!string);
 }
 

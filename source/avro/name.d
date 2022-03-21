@@ -3,6 +3,8 @@ module avro.name;
 
 import avro.exception : SchemaParseException;
 
+@safe:
+
 /**
    A fully qualified schema name, which includes a namespace and an individual name.
 
@@ -94,19 +96,37 @@ class Name {
     assert(name5.name is null && name5.namespace is null && name5.fullname is null);
   }
 
+  /// The name of a schema without its namespace.
+  string getName() const {
+    return name;
+  }
+
+  /// The namespace of a schema.
+  string getNamespace() const {
+    return namespace;
+  }
+
+  /// The combined name and namespace of a schema.
+  string getFullname() const {
+    return fullname;
+  }
+
+  bool opEquals(const Name n) const {
+    return n !is null && fullname == n.fullname;
+  }
+
   override
-  bool opEquals(Object o) {
-    Name obj = cast(Name) o;
-    return obj !is null && fullname == obj.fullname;
+  bool opEquals(Object o) const {
+    return this.opEquals(cast(Name) o);
   }
 
   ///
-  unittest {
+  @trusted unittest {
     assert(new Name("com.example.bob", null) == new Name("bob", "com.example"));
   }
 
   override
-  size_t toHash() nothrow @trusted {
+  size_t toHash() const nothrow @trusted {
     if (fullname is null) return 0;
     size_t hash = 0;
     foreach (c; fullname)
@@ -121,7 +141,7 @@ class Name {
   }
 
   override
-  string toString() {
+  string toString() const {
     return fullname;
   }
 }

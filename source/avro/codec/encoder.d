@@ -1,6 +1,8 @@
 /// Support logic for serializaing Avro values.
 module avro.codec.encoder;
 
+@safe:
+
 /**
    Low-level support for serializing Avro values.
 

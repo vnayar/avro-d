@@ -5,6 +5,8 @@ import avro.type : PRIMITIVE_TYPE_BY_NAME;
 import avro.schema : Schema;
 import avro.name : Name;
 
+@safe:
+
 /**
    A lookup table of known names for Schemas and the default namespace used during parsing.
 

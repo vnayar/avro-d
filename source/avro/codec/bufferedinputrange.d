@@ -2,6 +2,8 @@ module avro.codec.bufferedinputrange;
 
 import std.range;
 
+@safe:
+
 /// A utility to determine if an input range can return blocks of elements at a time.
 enum bool isBlockInputRange(IRangeT, ElemT = ElementType!(ElementType!IRangeT)) =
     isInputRange!(IRangeT)
@@ -91,7 +93,7 @@ auto bufferedInputRange(IRangeT, ElemT = ElementType!(ElementType!IRangeT))(IRan
 }
 
 ///
-unittest {
+@trusted unittest {
   import std.exception : assertThrown;
   import core.exception : AssertError;
 

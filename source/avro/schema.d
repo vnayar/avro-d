@@ -16,6 +16,8 @@ version (unittest) {
   import std.exception : assertThrown, assertNotThrown;
 }
 
+@safe:
+
 /**
    An Avro Schema is one of the following:
    - A JSON string, matching a defined type like "int", "string", or another Schema's name.
@@ -172,14 +174,14 @@ public abstract class Schema {
       case Type.ARRAY:
         if (defaultValue.type != JSONType.array)
           return false;
-        foreach (JSONValue element; defaultValue.array)
+        foreach (JSONValue element; defaultValue.arrayNoRef)
           if (!isValidDefault(schema.getElementSchema(), element))
             return false;
         return true;
       case Type.MAP:
         if (defaultValue.type != JSONType.object)
           return false;
-        foreach (JSONValue value; defaultValue.object)
+        foreach (JSONValue value; defaultValue.objectNoRef)
           if (!isValidDefault(schema.getValueSchema(), value))
             return false;
         return true;
@@ -191,8 +193,8 @@ public abstract class Schema {
         foreach (const Field field; schema.getFields()) {
           if (!isValidDefault(
                   field.schema,
-                  field.name in defaultValue.object
-                      ? defaultValue.object[field.name] : field.defaultValue))
+                  field.name in defaultValue.objectNoRef
+                      ? defaultValue.objectNoRef[field.name] : field.defaultValue))
             return false;
         }
         return true;
@@ -542,13 +544,11 @@ package class RecordSchema : NamedSchema {
     int i = 0;
     foreach (Field f; fields) {
       if (f.position != -1) {
-        throw new AvroRuntimeException("Field already used: " ~ f.toString);
+        throw new AvroRuntimeException("Field already used: " ~ f.name);
       }
       f.position = i++;
       if (f.name in _fieldMap) {
-        throw new AvroRuntimeException(
-            format("Duplicate field %s in record %s: %s and %s.",
-                f.name, name, f, _fieldMap[f.name]));
+        throw new AvroRuntimeException("Duplicate field " ~ f.name ~ " in record " ~ name.toString);
       }
       _fieldMap[f.name] = f;
       _fields ~= f;
@@ -609,7 +609,7 @@ package class EnumSchema : NamedSchema {
           "The Enum Default: " ~ enumDefault ~ " is not in the enum symbol set: "
           ~ symbols.to!string);
     }
-    ordinals.rehash;
+    // ordinals.rehash;  // Not @safe.
   }
 
   override
@@ -733,7 +733,7 @@ package class UnionSchema : Schema {
       }
       indexByName[name] = index++;
     }
-    indexByName.rehash;
+    // indexByName.rehash;  // Not @safe.
   }
 
   override

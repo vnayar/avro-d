@@ -7,6 +7,8 @@
  */
 module avro.type;
 
+@safe:
+
 /**
    Each AvroSchema has a type, with complex types allowing a schema to contain other schemas of
    the same or different types.

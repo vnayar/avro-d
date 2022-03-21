@@ -9,6 +9,8 @@ import avro.schema : Schema;
 import avro.attributes : HasJsonAttributes;
 import avro.exception : AvroTypeException;
 
+@safe:
+
 /**
    A field within a record.
 

@@ -14,6 +14,8 @@ import avro.attributes : HasJsonAttributes;
 import avro.orderedmap : OrderedMap;
 import avro.exception : AvroRuntimeException, AvroTypeException, SchemaParseException;
 
+@safe:
+
 /**
    A parser for JSON-format schemas. Eached named schema parsed with a parser is added to the names
    known to the parser so that subsequently parsed schemas may refer to it by name.
@@ -117,8 +119,8 @@ EOS");
           throw new SchemaParseException("Record has no fields: " ~ jsonSchema.toString);
         JSONValue fieldsNode = jsonSchema["fields"];
         Field[] fields;
-        fields.reserve(fieldsNode.array.length);
-        foreach (JSONValue jsonField; fieldsNode.array) {
+        fields.reserve(fieldsNode.arrayNoRef.length);
+        foreach (JSONValue jsonField; fieldsNode.arrayNoRef) {
           string fieldName = getRequiredText(jsonField, "name", "No field name");
           string fieldDoc = getOptionalText(jsonField, "doc");
           if ("type" !in jsonField)
@@ -143,18 +145,19 @@ EOS");
             jsonFieldDefault = JSONValue(jsonFieldDefault.str.to!double);
           }
           Field f = new Field(fieldName, fieldTypeSchema, fieldDoc, jsonFieldDefault, true, order);
-          foreach (string fieldAttrKey, JSONValue fieldAttrJson; jsonField.object) {
+          foreach (string fieldAttrKey, JSONValue fieldAttrJson; jsonField.objectNoRef) {
             if (fieldAttrKey !in RESERVED_ATTRIBUTES)
-              f.addAttribute(fieldAttrKey, jsonField.object[fieldAttrKey]);
+              f.addAttribute(fieldAttrKey, jsonField.objectNoRef[fieldAttrKey]);
           }
           f.aliases = parseAliases(jsonField);
           fields ~= f;
           if (fieldTypeSchema.getLogicalType() is null
               && getOptionalText(jsonField, "logicalType") !is null) {
-            stderr.writefln(
-                "WARN: Ignored the %s.%s.logicalType property (\"%s\"). It should probably "
-                ~ "be nested inside the \"type\" for the field.",
-                name, fieldName, getOptionalText(jsonField, "logicalType"));
+            // TODO: Produce a warning in a @safe manner when logical types are ignored.
+            // stderr.writefln(
+            //     "WARN: Ignored the %s.%s.logicalType property (\"%s\"). It should probably "
+            //     ~ "be nested inside the \"type\" for the field.",
+            //     name, fieldName, getOptionalText(jsonField, "logicalType"));
           }
         }
         result.setFields(fields);
@@ -163,10 +166,11 @@ EOS");
         if (symbolsNode.isNull || symbolsNode.type != JSONType.array)
           throw new SchemaParseException("Enum has no symbols: " ~ jsonSchema.toString);
         string[] symbols;
-        symbols.reserve(symbolsNode.array.length);
-        foreach (JSONValue n; symbolsNode.array)
+        symbols.reserve(symbolsNode.arrayNoRef.length);
+        foreach (JSONValue n; symbolsNode.arrayNoRef)
           symbols ~= n.str;
-        JSONValue enumDefaultNode = "default" in jsonSchema ? jsonSchema["default"] : JSONValue(null);
+        JSONValue enumDefaultNode =
+            "default" in jsonSchema ? jsonSchema["default"] : JSONValue(null);
         string defaultSymbol = null;
         if (!enumDefaultNode.isNull)
           defaultSymbol = enumDefaultNode.str;
@@ -199,7 +203,7 @@ EOS");
       }
 
       // Now process the the custom attributes for the schema.
-      foreach (string attrKey, JSONValue attrJson; jsonSchema.object) {
+      foreach (string attrKey, JSONValue attrJson; jsonSchema.objectNoRef) {
         if (attrKey !in RESERVED_ATTRIBUTES) // ignore reserved
           result.addAttribute(attrKey, attrJson);
       }
@@ -208,7 +212,7 @@ EOS");
       // TODO: Add logic to understand logical types.
       result.logicalType = null;
       schemaTable.defaultNamespace(savedNamespace); // restore space
-      if (typeid(result) == NamedSchema.classinfo) {
+      if (cast(NamedSchema)(result) !is null) {
         bool[string] aliases = parseAliases(jsonSchema);
         foreach (string alias_; aliases.keys) {
           result.addAlias(alias_);
@@ -217,8 +221,8 @@ EOS");
       return result;
     } else if (jsonSchema.type == JSONType.array) { // union
       Schema[] types;
-      types.reserve(jsonSchema.array.length);
-      foreach (JSONValue typeNode; jsonSchema.array)
+      types.reserve(jsonSchema.arrayNoRef.length);
+      foreach (JSONValue typeNode; jsonSchema.arrayNoRef)
         types ~= parseJson(typeNode);
       return new UnionSchema(types);
     } else {
@@ -261,7 +265,7 @@ EOS");
     JSONValue aliasesNode = node["aliases"];
     if (aliasesNode.type != JSONType.array)
       throw new SchemaParseException("aliases not an array: " ~ node.toString);
-    foreach (JSONValue aliasNode; aliasesNode.array) {
+    foreach (JSONValue aliasNode; aliasesNode.arrayNoRef) {
       if (aliasNode.type != JSONType.string)
         throw new SchemaParseException("alias not a string: " ~ aliasNode.toString);
       aliases[aliasNode.str] = true;

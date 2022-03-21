@@ -14,6 +14,7 @@ version (unittest) {
   import std.exception : assertThrown;
 }
 
+@safe:
 
 /**
    A [Decoder] for binary-format data.
@@ -103,7 +104,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
   }
 
   override
-  float readFloat() {
+  float readFloat() @trusted {
     ubyte[] bytes = iRange.take(float.sizeof)[];
     doSkipBytes(float.sizeof);
     return *(cast(float*)(bytes.ptr));
@@ -122,7 +123,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
   }
 
   override
-  double readDouble() {
+  double readDouble() @trusted {
     ubyte[] bytes = iRange.take(double.sizeof)[];
     doSkipBytes(double.sizeof);
     return *(cast(double*)(bytes.ptr));

@@ -8,6 +8,8 @@ import std.conv : to;
 import avro.codec.encoder : Encoder;
 import avro.codec.jsonutil : encodeJsonString;
 
+@safe:
+
 /// An [Encoder] for Avro's JSON encoding that does not buffer output.
 class JsonEncoder(ORangeT) : Encoder
 if (isOutputRange!(ORangeT, char))
@@ -181,7 +183,7 @@ auto jsonEncoder(ORangeT)(ORangeT oRange) {
 }
 
 ///
-unittest {
+@trusted unittest {
   import std.stdio;
   import std.format;
   import std.array : appender;

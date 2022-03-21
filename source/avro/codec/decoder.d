@@ -3,6 +3,8 @@ module avro.codec.decoder;
 
 import avro.schema : Schema;
 
+@safe:
+
 /**
   Low-level support for de-serializing Avro values.
 

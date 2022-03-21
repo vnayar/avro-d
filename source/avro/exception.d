@@ -1,6 +1,8 @@
 /// Avro related exception classes.
 module avro.exception;
 
+@safe:
+
 /// Base Avro exception.
 class AvroRuntimeException : Exception
 {

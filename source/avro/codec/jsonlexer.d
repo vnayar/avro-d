@@ -8,6 +8,8 @@ import std.range;
 
 import avro.codec.jsonutil : decodeJsonString;
 
+@safe:
+
 /// Exceptions related to incremental parsing in [JsonLexer].
 class JsonLexException : Exception {
   this(string msg, Throwable nextInChain = null, string file = __FILE__, size_t line = __LINE__) {
@@ -432,7 +434,7 @@ auto jsonLexer(IRangeT)(IRangeT iRange) {
 }
 
 ///
-unittest {
+@trusted unittest {
   import std.exception : assertNotThrown;
 
   struct Test {

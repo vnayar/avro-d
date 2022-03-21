@@ -4,6 +4,8 @@ module avro.codec.bufferedoutputrange;
 import std.range;
 import std.traits;
 
+@safe:
+
 /// A specialization of std.range.ElementType which also considers output ranges.
 template ElementType(R)
 if (isFunction!(R.put))
@@ -139,7 +141,7 @@ auto bufferedOutputRange(ElemT = ElementType!ORangeT, ORangeT)(
   return BufferedOutputRange!(ORangeT, ElemT)(oRange, bufSize);
 }
 
-unittest {
+@trusted unittest {
   import std.array : appender;
   int[] data = [1];
   auto bufRange = bufferedOutputRange!int(appender(&data), 3);

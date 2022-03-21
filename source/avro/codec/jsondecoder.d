@@ -17,6 +17,8 @@ version (unittest) {
   import avro.codec.jsonlexer : JsonLexException;
 }
 
+@safe:
+
 /// A JSON pull-parser that allows tokens to be processed as they are read.
 class JsonDecoder(IRangeT) : Decoder
 if (isInputRange!(IRangeT) && isSomeChar!(ElementType!IRangeT)) {

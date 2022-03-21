@@ -7,6 +7,9 @@ import std.conv : to;
 import avro.codec.encoder : Encoder;
 import avro.codec.zigzag : encodeInt, encodeLong;
 
+
+@safe:
+
 /**
    An [Encoder] for Avro's binary encoding that does not buffer output.
 
@@ -29,7 +32,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -53,7 +56,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -72,7 +75,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -87,7 +90,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   override
-  void writeFloat(float f) {
+  void writeFloat(float f) @trusted {
     /// In DLang, floats use IEEE-754 format, matching Avro's format.
     /// See: https://dlang.org/spec/float.html
     const(ubyte)* p = cast(const(ubyte)*)(&f);
@@ -95,7 +98,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -110,7 +113,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   override
-  void writeDouble(double d) {
+  void writeDouble(double d) @trusted {
     /// In DLang, floats use IEEE-754 format, matching Avro's format.
     /// See: https://dlang.org/spec/float.html
     const(ubyte)* p = cast(const(ubyte)*)(&d);
@@ -118,7 +121,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -151,7 +154,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -174,7 +177,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -201,7 +204,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -222,7 +225,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -240,7 +243,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -280,7 +283,7 @@ if (isOutputRange!(ORangeT, ubyte))
   }
 
   ///
-  unittest {
+  @trusted unittest {
     import std.array : appender;
     ubyte[] data;
     auto encoder = binaryEncoder(appender(&data));
@@ -357,7 +360,7 @@ auto binaryEncoder(ORangeT)(ORangeT oRange) {
 }
 
 /// writeBoolean
-unittest {
+@trusted unittest {
   import std.array : appender;
   import avro.codec.bufferedoutputrange : bufferedOutputRange;
 
@@ -379,7 +382,7 @@ unittest {
 }
 
 // writeNull
-unittest {
+@trusted unittest {
   import std.array : appender;
   ubyte[] data;
   auto encoder = binaryEncoder(appender(&data));
