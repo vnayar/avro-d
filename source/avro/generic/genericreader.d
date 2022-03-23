@@ -8,6 +8,7 @@ import avro.generic.genericdata
     : GenericDatum, GenericFixed, GenericRecord, GenericArray, GenericEnum, GenericMap;
 import avro.schema : Schema;
 import avro.type : Type;
+import avro.exception : AvroRuntimeException;
 
 /// A utility class to read GenericDatum from decoders.
 class GenericReader {
@@ -53,11 +54,15 @@ class GenericReader {
         auto r = datum.getValue!GenericRecord();
         if (isResolving) {
           // TODO
-          throw new Exception("Not implemented!");
+          throw new AvroRuntimeException("Not implemented!");
         } else {
           d.readRecordStart();
           for (size_t i = 0; i < r.fieldCount(); i++) {
-            d.readRecordKey();
+            string recordKey = d.readRecordKey();
+            if (recordKey != null && r.fieldIndex(recordKey) != i) {
+              throw new AvroRuntimeException("Order or value of key '" ~ recordKey
+                  ~ "' does not match schema.");
+            }
             read(d, isResolving, r.fieldAt(i));
           }
           d.readRecordEnd();
@@ -70,7 +75,7 @@ class GenericReader {
       case Type.ARRAY:
         auto v = datum.getValue!GenericArray();
         GenericDatum[] arr = v.getValue();
-        const(Schema) elemSchema = v.getSchema().getElementSchema();
+        auto elemSchema = v.getSchema().getElementSchema();
         arr.length = 0;
         size_t start = 0;
         for (size_t m = d.readArrayStart(); m != 0; m = d.readArrayNext()) {
@@ -98,7 +103,7 @@ class GenericReader {
         r.rehash();
         break;
       default:
-        throw new Exception("Unknown schema type: " ~ datum.getType().to!string);
+        throw new AvroRuntimeException("Unknown schema type: " ~ datum.getType().to!string);
     }
     if (datum.isUnion() && datum.getType() != Type.NULL) {
       d.readUnionEnd();
@@ -205,4 +210,37 @@ EOS";
   assert(datum["name"].getValue!string() == "bob");
   assert(datum["favorite_number"].getValue!int() == 8);
   assert(datum["favorite_color"].getType() == Type.NULL);
+}
+
+///
+unittest {
+  import std.stdio;
+  import avro.parser : Parser;
+  import std.exception : assertThrown;
+  import avro.codec.jsondecoder;
+
+  auto parser = new Parser();
+  Schema schema = parser.parseText(q"EOS
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number", "type": ["int", "null"]},
+     {"name": "favorite_color", "type": ["string", "null"]}
+ ]
+}
+EOS");
+
+  string data = q"EOS
+{
+  "nam": "bob",
+  "favorite_numbero": {"int": 8},
+  "favorite_color": null
+}
+EOS";
+  auto decoder = jsonDecoder(data);
+  GenericReader reader = new GenericReader(schema, decoder);
+  GenericDatum datum;
+  assertThrown!AvroRuntimeException(reader.read(datum));
 }

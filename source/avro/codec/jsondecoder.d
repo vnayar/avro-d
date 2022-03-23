@@ -217,8 +217,9 @@ if (isInputRange!(IRangeT) && isSomeChar!(ElementType!IRangeT)) {
   }
 
   override
-  void readRecordKey() {
+  string readRecordKey() {
     lexer.expectToken(Token.STRING);
+    return lexer.stringValue();
   }
 
   override

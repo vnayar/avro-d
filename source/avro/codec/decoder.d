@@ -144,7 +144,7 @@ abstract class Decoder {
 
   abstract void readRecordStart();
 
-  abstract void readRecordKey();
+  abstract string readRecordKey();
 
   abstract void readRecordEnd();
 

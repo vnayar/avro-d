@@ -259,7 +259,8 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
   }
 
   override
-  void readRecordKey() {
+  string readRecordKey() {
+    return null;
   }
 
   override
