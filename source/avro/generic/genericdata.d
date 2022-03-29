@@ -166,6 +166,13 @@ class GenericDatum {
   }
 
   /**
+     Returns the underlying value as a [Variant].
+  */
+  public inout(Variant) getVariant() inout {
+    return value;
+  }
+
+  /**
      Returns the value held by this datum.
      Params:
        T = The type of the value, which much correspond to the Avro type returned by [getType()].
