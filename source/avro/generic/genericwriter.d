@@ -13,7 +13,7 @@ import avro.field : Field;
 
 /// [DatumWriter] for GenericDatum objects.
 class GenericWriter {
-  private Schema schema;
+  private const Schema schema;
   private Encoder encoder;
 
   /// Uses a given encoder to convert a [GenericDatum] into its serialized format.
@@ -103,7 +103,7 @@ class GenericWriter {
   }
 
   /// Constructs a writer for a given schema using the given encoder.
-  this(Schema schema, Encoder encoder) {
+  this(const Schema schema, Encoder encoder) {
     this.schema = schema;
     this.encoder = encoder;
   }

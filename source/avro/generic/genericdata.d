@@ -59,7 +59,7 @@ EOS");
 
    assert(datum["name"].getValue!string == "bob");
 
-   // Enums have convenience functions directly on GenericData.
+   // Unions have convenience functions directly on GenericData.
    datum["favorite_number"].setUnionIndex(0);
    assert(datum["favorite_number"].getUnionIndex() == 0);
 
@@ -504,7 +504,7 @@ class GenericMap : GenericContainer {
 class GenericEnum : GenericContainer {
   private size_t value;
 
-  private size_t getEnumOrdinal(const Schema schema, string symbol) {
+  private size_t getEnumOrdinal(const Schema schema, string symbol) const {
     if (getSchema().hasEnumSymbol(symbol))
       return getSchema().getEnumOrdinal(symbol);
     throw new AvroRuntimeException("No such symbol: " ~ symbol);
@@ -524,7 +524,7 @@ class GenericEnum : GenericContainer {
      Returns the symbol corresponding to ordinal n.
      Throws: AvroRuntimeException if the enum has no such ordinal.
   */
-  string getSymbol(size_t n) {
+  string getSymbol(size_t n) const {
     const(string[]) symbols = getSchema().getEnumSymbols();
     if (n < symbols.length) {
       return symbols[n];
@@ -541,7 +541,7 @@ class GenericEnum : GenericContainer {
      Returns the ordinal for the given symbol.
      Throws: AvroRuntimeException if the symbol does not match any enum value.
   */
-  size_t getEnumOrdinal(string symbol) {
+  size_t getEnumOrdinal(string symbol) const {
     return GenericEnum.getEnumOrdinal(getSchema(), symbol);
   }
 
@@ -560,7 +560,7 @@ class GenericEnum : GenericContainer {
   }
 
   /// Returns the symbol for the current value of this enum.
-  string getSymbol() {
+  string getSymbol() const {
     const(string[]) symbols = getSchema().getEnumSymbols();
     return symbols[value];
   }
