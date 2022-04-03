@@ -194,6 +194,16 @@ class GenericDatum {
     }
   }
 
+  public void setValue(string val) {
+    if (type == Type.UNION) {
+      value.get!(GenericUnion).getDatum().setValue(val);
+    } else if (type == Type.ENUM) {
+      value.get!(GenericEnum).setSymbol(val);
+    } else {
+      value = val;
+    }
+  }
+
   /// ditto
   public void opAssign(T)(T val)
   if (!is(T : GenericDatum)) {
