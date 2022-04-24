@@ -109,7 +109,7 @@ class GenericWriter {
   }
 
   /// Writes a value into the encoder.
-  void write(GenericDatum datum) {
+  void write(const GenericDatum datum) {
     write(datum, encoder);
   }
 }
