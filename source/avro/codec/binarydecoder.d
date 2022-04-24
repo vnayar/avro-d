@@ -145,7 +145,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
     size_t len = doReadLength();
     ubyte[] bytes = iRange.take(len)[];
     doSkipBytes(len);
-    return bytes.idup.assumeUTF;
+    return bytes.assumeUTF;
   }
 
   ///
@@ -183,7 +183,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
     size_t len = doReadLength();
     ubyte[] bytes = iRange.take(len)[];
     doSkipBytes(len);
-    return bytes.dup;
+    return bytes;
   }
 
   ///
@@ -219,7 +219,7 @@ if (isInputRange!IRangeT && is(ElementType!(IRangeT) : ubyte))
   ubyte[] readFixed(size_t length) {
     ubyte[] bytes = iRange.take(length)[];
     iRange.popFrontN(length);
-    return bytes.dup;
+    return bytes;
   }
 
   ///
