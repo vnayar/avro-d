@@ -170,7 +170,7 @@ if (isOutputRange!(ORangeT, ubyte))
   alias writeFixed = typeof(super).writeFixed;
 
   override
-  void writeFixed(ubyte[] bytes, size_t start, size_t len)
+  void writeFixed(const ubyte[] bytes, size_t start, size_t len)
   in (bytes.length >= start + len)
   {
     put(oRange, bytes[start .. (start + len)]);
@@ -194,7 +194,7 @@ if (isOutputRange!(ORangeT, ubyte))
   alias writeBytes = typeof(super).writeBytes;
 
   override
-  void writeBytes(ubyte[] bytes, size_t start, size_t len) {
+  void writeBytes(const ubyte[] bytes, size_t start, size_t len) {
     if (len == 0) {
       writeZero();
       return;

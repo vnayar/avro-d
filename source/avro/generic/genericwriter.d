@@ -17,7 +17,7 @@ class GenericWriter {
   private Encoder encoder;
 
   /// Uses a given encoder to convert a [GenericDatum] into its serialized format.
-  static void write(GenericDatum datum, Encoder e) {
+  static void write(const GenericDatum datum, Encoder e) {
     if (datum.isUnion()) {
       e.writeUnionStart();
       size_t unionIndex = datum.getUnionIndex();
@@ -66,11 +66,11 @@ class GenericWriter {
         e.writeRecordEnd();
         break;
       case Type.ENUM:
-        GenericEnum ge = datum.getValue!GenericEnum();
+        auto ge = datum.getValue!GenericEnum();
         e.writeEnum(ge.getValue(), ge.getSymbol());
         break;
       case Type.ARRAY:
-        GenericDatum[] items = datum.getValue!GenericArray().getValue();
+        const(GenericDatum[]) items = datum.getValue!GenericArray().getValue();
         e.writeArrayStart();
         if (items.length > 0) {
           e.setItemCount(items.length);
@@ -82,7 +82,7 @@ class GenericWriter {
         e.writeArrayEnd();
         break;
       case Type.MAP:
-        GenericDatum[string] items = datum.getValue!GenericMap().getValue();
+        const(GenericDatum[string]) items = datum.getValue!GenericMap().getValue();
         e.writeMapStart();
         if (items.length > 0) {
           e.setItemCount(items.length);

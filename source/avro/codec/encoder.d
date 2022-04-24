@@ -71,13 +71,13 @@ abstract class Encoder {
 
     Throws: AvroTypeException If this is a stateful writer and a byte-string is not expected
    */
-  abstract void writeBytes(ubyte[] bytes, size_t start, size_t len);
+  abstract void writeBytes(const ubyte[] bytes, size_t start, size_t len);
 
   /**
      Writes a byte string. Equivalent to `writeBytes(bytes, 0, bytes.length)`
      Throws: AvroTypeException If this is a stateful writer and a byte-string is not expected
   */
-  void writeBytes(ubyte[] bytes) {
+  void writeBytes(const ubyte[] bytes) {
     writeBytes(bytes, 0, bytes.length);
   }
 
@@ -91,7 +91,7 @@ abstract class Encoder {
 
      Throws: AvroTypeException If this is a stateful writer and a byte-string is not expected
   */
-  abstract void writeFixed(ubyte[] bytes, size_t start, size_t len);
+  abstract void writeFixed(const ubyte[] bytes, size_t start, size_t len);
 
   /**
     A shorthand for `writeFixed(bytes, 0, bytes.length)`.
@@ -99,7 +99,7 @@ abstract class Encoder {
     Params:
       bytes = The bytes of a fixed value.
    */
-  void writeFixed(ubyte[] bytes) {
+  void writeFixed(const ubyte[] bytes) {
     writeFixed(bytes, 0, bytes.length);
   }
 

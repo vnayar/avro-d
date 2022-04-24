@@ -461,6 +461,11 @@ class GenericArray : GenericContainer {
     return value;
   }
 
+  /// ditto
+  const(GenericDatum[]) getValue() const {
+    return value;
+  }
+
   ref inout(GenericDatum) opIndex(int idx) inout {
     return value[idx];
   }
@@ -485,7 +490,11 @@ class GenericMap : GenericContainer {
   }
 
   /// Returns the data contents of the map.
-  GenericDatum[string] getValue() {
+  ref GenericDatum[string] getValue() return {
+    return value;
+  }
+
+  const(GenericDatum[string]) getValue() const {
     return value;
   }
 
@@ -558,7 +567,7 @@ class GenericEnum : GenericContainer {
   }
 
   /// Returns the ordinal for the current value of the enum.
-  size_t getValue() {
+  size_t getValue() const {
     return value;
   }
 
