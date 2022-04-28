@@ -28,7 +28,7 @@ class Parser {
       "default": true
   ];
 
-  private SchemaTable schemaTable = new SchemaTable();
+  private SchemaTable!() schemaTable = new SchemaTable!();
 
   /// Adds the provided types to the set of defined and named types known to this parser.
   public Parser addSchemas(Schema[string] types) {
@@ -272,4 +272,83 @@ EOS");
     }
     return aliases;
   }
+}
+
+
+///
+unittest {
+  import std.stdio;
+  import avro.parser : Parser;
+  import avro.codec.jsondecoder;
+
+  auto parser = new Parser();
+  Schema schema = parser.parseText(q"EOS
+{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number", "type": ["int", "null"]},
+     {"name": "favorite_color", "type": ["string", "null"]}
+ ]
+}
+EOS");
+
+  assert(schema.getFullname() == "example.avro.User");
+  assert(schema.getType() == Type.RECORD);
+  assert(schema.getFields().length == 3);
+  assert(schema.getField("name").getSchema().getType() == Type.STRING);
+
+  const Schema schema2 = schema.getField("favorite_number").getSchema();
+  assert(schema2.getType() == Type.UNION);
+  assert(schema2.getTypes().length == 2);
+  assert(schema2.getTypes()[0].getType() == Type.INT);
+  assert(schema2.getTypes()[1].getType() == Type.NULL);
+}
+
+// A recursive record.
+unittest {
+  import std.stdio;
+  import avro.parser : Parser;
+  import avro.codec.jsondecoder;
+
+  auto parser = new Parser();
+  Schema schema = parser.parseText(q"EOS
+{"namespace": "example.avro",
+ "name": "Node",
+ "type": "record",
+ "fields": [
+   {
+     "name": "value",
+     "type": {
+       "name": "Value",
+       "type": "record",
+       "fields": [
+         {"name": "a", "type": "int"}
+       ]
+     }
+   },
+   {
+     "name": "nextNode",
+     "type": ["Node", "null"]
+   }
+ ]
+}
+EOS");
+
+  assert(schema.getFullname() == "example.avro.Node");
+  assert(schema.getType() == Type.RECORD);
+  assert(schema.getFields().length == 2);
+
+  const Schema schema1 = schema.getField("value").getSchema();
+  assert(schema1.getType() == Type.RECORD);
+  assert(schema1.getFields().length == 1);
+
+  const Schema schema2 = schema.getField("nextNode").getSchema();
+  assert(schema2.getType() == Type.UNION);
+  assert(schema2.getTypes().length == 2);
+  assert(schema2.getTypes()[0].getType() == Type.RECORD);
+  assert(schema2.getTypes()[1].getType() == Type.NULL);
+
+  assert(schema is schema2.getTypes()[0]);
 }

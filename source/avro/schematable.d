@@ -15,16 +15,19 @@ import avro.name : Name;
    designate a namespace, it inherits the namespace from the most tightly enclosing schema
    or protocol.
 
+   Params:
+     SchemaT = Allows the caller to override the stored type, e.g. with a const.
+
    See_Also: https://avro.apache.org/docs/current/spec.html#names
 */
-class SchemaTable {
+class SchemaTable(SchemaT : Schema = Schema) {
   /// Maps a fully qualified name to a Schema.
-  private Schema[Name] _schemaByName;
+  private SchemaT[string] _schemaByName;
 
   /// The namespace that should be used as the default during schema parsing.
   private string _defaultNamespace;
 
-  public string defaultNamespace() {
+  public string defaultNamespace() const {
     return _defaultNamespace;
   }
 
@@ -32,16 +35,16 @@ class SchemaTable {
     return this._defaultNamespace = defaultNamespace;
   }
 
-  public Schema getSchemaByName(Name name) {
-    if (name in _schemaByName) {
-      return _schemaByName[name];
+  public SchemaT getSchemaByName(Name name) {
+    if (name.getFullname() in _schemaByName) {
+      return _schemaByName[name.getFullname()];
     } else {
       return null;
     }
   }
 
   /// Look up a previously known Schema by its name.
-  public Schema getSchemaByName(string name) {
+  public SchemaT getSchemaByName(string name) {
     if (name in PRIMITIVE_TYPE_BY_NAME) {
       return Schema.createPrimitive(PRIMITIVE_TYPE_BY_NAME[name]);
     }
@@ -50,14 +53,14 @@ class SchemaTable {
   }
 
   /// Indicates whether a given name is known in the SchemaTable.
-  public bool containsName(Name name) {
-    return (name in _schemaByName) != null;
+  public bool containsName(const Name name) const {
+    return (name.getFullname() in _schemaByName) != null;
   }
 
   /// Adds a new schema to the set of known schemas.
-  public void addSchema(Schema schema) {
+  public void addSchema(SchemaT schema) {
     import avro.schema : NamedSchema;
-    _schemaByName[(cast(NamedSchema) schema).name] = schema;
+    _schemaByName[schema.getFullname()] = schema;
   }
 }
 
