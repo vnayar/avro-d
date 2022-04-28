@@ -1,6 +1,7 @@
 /// Schemas describe the valid format of data, used for (en/de)coding, code generation, and more.
 module avro.schema;
 
+import std.array : appender, Appender;
 import std.conv : to;
 import std.json : JSONValue, JSONType, parseJSON;
 import std.stdio : stderr;
@@ -8,9 +9,12 @@ import std.stdio : stderr;
 import avro.field : Field;
 import avro.type : Type, PRIMITIVE_TYPE_BY_NAME;
 import avro.name : Name;
+import avro.schematable : SchemaTable;
 import avro.attributes : HasJsonAttributes;
 import avro.orderedmap : OrderedMap;
 import avro.exception : AvroRuntimeException, AvroTypeException, SchemaParseException;
+
+/*DEBUG*/ import std.stdio;
 
 version (unittest) {
   import std.exception : assertThrown, assertNotThrown;
@@ -330,9 +334,34 @@ public abstract class Schema {
     throw new AvroRuntimeException("Not fixed: " ~ this.toString);
   }
 
+  /**
+     Creates a textual representation of a Schema in JSON.
+  */
   override
   public string toString() const {
-    return typeid(typeof(this)).stringof;
+    //return typeid(typeof(this)).stringof;
+    auto schemaTable = new SchemaTable!(const(Schema))();
+    auto str = appender!string();
+    toJson(schemaTable, str);
+    return str[];
+  }
+
+  void toJson(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    if (!hasAttributes()) {
+      str ~= "\"" ~ getName() ~ "\"";
+    } else {
+      str ~= "{ ";
+      str ~= "\"type\": " ~ getName();
+      writeAttributes(str);
+      str ~= " }";
+    }
+  }
+
+  // A helper function for toString to write attributes to a JSON object.
+  void writeAttributes(Appender!string str) const {
+    foreach (string key; getAttributes().orderedKeys) {
+      str ~= ", \"" ~ key ~ "\": " ~ getAttributes()[key].toString();
+    }
   }
 }
 
@@ -500,6 +529,40 @@ package abstract class NamedSchema : Schema {
       namespace = this.name.namespace;
     aliases[new Name(name, namespace)] = true;
   }
+
+  /// Writes the name of a schema instead of the full definition if it has already been visited.
+  bool writeNameRef(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    if (this is schemaTable.getSchemaByName(name)) {
+      str ~= "\"" ~ name.getFullname() ~"\"";
+      return true;
+    } else if (name.name !is null) {
+      schemaTable.addSchema(this);
+    }
+    return false;
+  }
+
+  // A helper function for toString, writing the name into the JSON object being written.
+  void writeName(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    if (getName() !is null)
+      str ~= ", \"name\": \"" ~ getName() ~ "\"";
+    if (getNamespace() !is null && getNamespace() != schemaTable.defaultNamespace())
+      str ~= ", \"namespace\": \"" ~ getNamespace() ~ "\"";
+    else if (getNamespace() is null && schemaTable.defaultNamespace() !is null)
+      str ~= ", \"namespace\": \"\"";
+  }
+
+  // A helper function for toString, writing aliases into the JSON object being written.
+  void writeAliases(Appender!string str) const {
+    if (aliases is null || aliases.length == 0)
+      return;
+    str ~= ", \"aliases\": [ ";
+    foreach (size_t i, const(Name) aliasName; aliases.keys) {
+      if (i > 0)
+        str ~= ", ";
+      str ~= "\"" ~ aliasName.getFullname() ~ "\"";
+    }
+    str ~= " ]";
+  }
 }
 
 /**
@@ -559,6 +622,56 @@ package class RecordSchema : NamedSchema {
   public bool isError() const {
     return _isError;
   }
+
+  override
+  void toJson(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    if (writeNameRef(schemaTable, str))
+      return;
+    string savedSpace = schemaTable.defaultNamespace();
+    str ~= "{ ";
+    str ~= "\"type\": \"record\"";
+    writeName(schemaTable, str);
+    if (getDoc() !is null)
+      str ~= ", \"doc\": \"" ~ getDoc() ~ "\"";
+    if (_fields !is null) {
+      str ~= ", \"fields\": ";
+      fieldsToJson(schemaTable, str);
+    }
+    writeAttributes(str);
+    str ~= " }";
+    schemaTable.defaultNamespace(savedSpace);
+  }
+
+  void fieldsToJson(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    str ~= "[";
+    foreach (size_t fpos, const Field f; _fields) {
+      if (fpos > 0)
+        str ~= ", ";
+      str ~= "{ ";
+      str ~= "\"name\": \"" ~ f.getName() ~ "\"";
+      str ~= ", \"type\": ";
+      f.getSchema().toJson(schemaTable, str);
+      if (f.getDoc() !is null)
+        str ~= ", \"doc\": \"" ~ f.getDoc() ~ "\"";
+      if (f.hasDefaultValue())
+        str ~= ", \"default\": " ~ f.getDefaultValue().toString();
+      if (f.getOrder() != Field.Order.ASCENDING)
+        str ~= ", \"order\": " ~ "\"" ~ f.getOrder().to!string ~ "\"";
+      if (f.getAliases().length > 0) {
+        str ~= ", \"aliases\": [";
+        foreach (size_t i, string aliasName; f.getAliases()) {
+          if (i > 0)
+            str ~= ", ";
+          str ~= "\"" ~ aliasName ~ "\"";
+        }
+        str ~= " ]";
+      }
+      writeAttributes(str);
+      str ~= " }";
+    }
+    str ~= "\n]";
+  }
+
 }
 
 unittest {
@@ -567,8 +680,8 @@ unittest {
       "hello-doc",
       false,
       [
-          new Field("a", new IntSchema(), "", JSONValue(3), true, Field.Order.IGNORE),
-          new Field("b", new StringSchema(), "", JSONValue("ab"), true, Field.Order.IGNORE)
+          new Field("a", new IntSchema(), null, JSONValue(3), true, Field.Order.IGNORE),
+          new Field("b", new StringSchema(), "eeb", JSONValue("ab"), true, Field.Order.ASCENDING)
       ]);
   assert(schema.getType() == Type.RECORD);
   assert(schema.getName() == "fish");
@@ -579,6 +692,20 @@ unittest {
   assert(schema.getField("a").getPosition() == 0);
   assert(schema.getField("b").getName() == "b");
   assert(schema.getField("b").getPosition() == 1);
+
+  JSONValue expectedJson = parseJSON(q"EOS
+{
+  "type": "record",
+  "namespace": "com.example",
+  "name": "fish",
+  "doc": "hello-doc",
+  "fields": [
+    { "name": "a", "type": "int", "default": 3, "order": "IGNORE" },
+    { "name": "b", "type": "string", "doc": "eeb", "default": "ab" }
+  ]
+}
+EOS");
+  assert(parseJSON(schema.toString()) == expectedJson);
 }
 
 
@@ -634,6 +761,29 @@ package class EnumSchema : NamedSchema {
   public string getEnumDefault() const {
     return enumDefault;
   }
+
+  override
+  void toJson(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    if (writeNameRef(schemaTable, str))
+      return;
+    str ~= "{ ";
+    str ~= "\"type\": \"enum\"";
+    writeName(schemaTable, str);
+    if (getDoc() !is null)
+      str ~= ", \"doc\": \"" ~ getDoc() ~ "\"";
+    str ~= ", \"symbols\": [";
+    foreach (size_t i, symbol; symbols) {
+      if (i > 0)
+        str ~= ", ";
+      str ~= "\"" ~ symbol ~ "\"";
+    }
+    str ~= " ]";
+    if (getEnumDefault() !is null)
+      str ~= ", \"default\": \"" ~ getEnumDefault() ~ "\"";
+    writeAttributes(str);
+    writeAliases(str);
+    str ~= " }";
+  }
 }
 
 unittest {
@@ -645,6 +795,18 @@ unittest {
   assert(schema.getEnumOrdinal("PART_TIME") == 0);
   assert(schema.getEnumOrdinal("FULL_TIME") == 1);
   assert(schema.getEnumDefault() == "FULL_TIME");
+
+  JSONValue expectedJson = parseJSON(q"EOS
+{
+  "type": "enum",
+  "namespace": "com.example",
+  "name": "employment",
+  "doc": "ham",
+  "symbols": [ "PART_TIME", "FULL_TIME" ],
+  "default": "FULL_TIME"
+}
+EOS");
+  assert(parseJSON(schema.toString()) == expectedJson);
 }
 
 unittest {
@@ -672,6 +834,16 @@ package class ArraySchema : Schema {
   public const(Schema) getElementSchema() const {
     return elementType;
   }
+
+  override
+  void toJson(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    str ~= "{ ";
+    str ~= "\"type\": \"array\"";
+    str ~= ", \"items\": ";
+    elementType.toJson(schemaTable, str);
+    writeAttributes(str);
+    str ~= " }";
+  }
 }
 
 unittest {
@@ -680,6 +852,14 @@ unittest {
   assert(schema.getName() == "array");
   assert(schema.getFullname() == "array");
   assert(schema.getElementSchema().getType() == Type.INT);
+
+  JSONValue expectedJson = parseJSON(q"EOS
+{
+  "type": "array",
+  "items": "int"
+}
+EOS");
+  assert(parseJSON(schema.toString()) == expectedJson);
 }
 
 /**
@@ -698,6 +878,16 @@ package class MapSchema : Schema {
   public const(Schema) getValueSchema() const {
     return valueType;
   }
+
+  override
+  void toJson(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    str ~= "{ ";
+    str ~= "\"type\": \"map\"";
+    str ~= ", \"values\": ";
+    valueType.toJson(schemaTable, str);
+    writeAttributes(str);
+    str ~= " }";
+  }
 }
 
 unittest {
@@ -706,6 +896,14 @@ unittest {
   assert(schema.getName() == "map");
   assert(schema.getFullname() == "map");
   assert(schema.getValueSchema().getType() == Type.INT);
+
+  JSONValue expectedJson = parseJSON(q"EOS
+{
+  "type": "map",
+  "values": "int"
+}
+EOS");
+  assert(parseJSON(schema.toString()) == expectedJson, schema.toString());
 }
 
 /**
@@ -745,6 +943,17 @@ package class UnionSchema : Schema {
   public size_t getIndexNamed(string name) const {
     return indexByName[name];
   }
+
+  override
+  void toJson(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    str ~= "[ ";
+    foreach (size_t i, type; types) {
+      if (i > 0)
+        str ~= ", ";
+      type.toJson(schemaTable, str);
+    }
+    str ~= " ]";
+  }
 }
 
 unittest {
@@ -757,6 +966,14 @@ unittest {
   assert(schema.getTypes().length == 2);
   assert(schema.getIndexNamed("string") == 0);
   assert(schema.getIndexNamed("int") == 1);
+
+  JSONValue expectedJson = parseJSON(q"EOS
+[
+  "string",
+  "int"
+]
+EOS");
+  assert(parseJSON(schema.toString()) == expectedJson, schema.toString());
 }
 
 package class FixedSchema : NamedSchema {
@@ -771,6 +988,21 @@ package class FixedSchema : NamedSchema {
   public size_t getFixedSize() const {
     return size;
   }
+
+  override
+  void toJson(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
+    if (writeNameRef(schemaTable, str))
+      return;
+    str ~= "{ ";
+    str ~= "\"type\": \"fixed\"";
+    writeName(schemaTable, str);
+    if (getDoc() !is null)
+      str ~= ", \"doc\": \"" ~ getDoc() ~ "\"";
+    str ~= ", \"size\": " ~ size.to!string;
+    writeAttributes(str);
+    writeAliases(str);
+    str ~= " }";
+  }
 }
 
 unittest {
@@ -779,4 +1011,15 @@ unittest {
   assert(schema.getName() == "bob");
   assert(schema.getFullname() == "com.example.bob");
   assert(schema.getFixedSize() == 10);
+
+  JSONValue expectedJson = parseJSON(q"EOS
+{
+  "type": "fixed",
+  "namespace": "com.example",
+  "name": "bob",
+  "doc": "fixed doc",
+  "size": 10
+}
+EOS");
+  assert(parseJSON(schema.toString()) == expectedJson);
 }

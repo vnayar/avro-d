@@ -39,6 +39,11 @@ mixin template HasJsonAttributes() {
   const(OrderedMap!(string, JSONValue)) getAttributes() const {
     return attributes;
   }
+
+  /// Returns true if there is at least one attribute.
+  bool hasAttributes() const {
+    return !attributes.isEmpty();
+  }
 }
 
 ///

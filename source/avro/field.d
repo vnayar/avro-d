@@ -96,7 +96,7 @@ public class Field {
     return defaultValue;
   }
 
-  public Order getOrder() {
+  public Order getOrder() const {
     return order;
   }
 
@@ -104,7 +104,7 @@ public class Field {
     aliases[name] = true;
   }
 
-  public bool[string] getAliases() {
-    return aliases;
+  public string[] getAliases() const {
+    return aliases.keys;
   }
 }

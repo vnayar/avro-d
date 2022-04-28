@@ -1,6 +1,8 @@
 /// A table of observed schemas organized by name, used during schema parsing.
 module avro.schematable;
 
+import std.typecons : Rebindable, rebindable;
+
 import avro.type : PRIMITIVE_TYPE_BY_NAME;
 import avro.schema : Schema;
 import avro.name : Name;
@@ -20,9 +22,9 @@ import avro.name : Name;
 
    See_Also: https://avro.apache.org/docs/current/spec.html#names
 */
-class SchemaTable(SchemaT : Schema = Schema) {
+class SchemaTable(SchemaT : const(Schema) = Schema) {
   /// Maps a fully qualified name to a Schema.
-  private SchemaT[string] _schemaByName;
+  private Rebindable!(SchemaT)[string] _schemaByName;
 
   /// The namespace that should be used as the default during schema parsing.
   private string _defaultNamespace;
@@ -35,7 +37,7 @@ class SchemaTable(SchemaT : Schema = Schema) {
     return this._defaultNamespace = defaultNamespace;
   }
 
-  public SchemaT getSchemaByName(Name name) {
+  public SchemaT getSchemaByName(const Name name) {
     if (name.getFullname() in _schemaByName) {
       return _schemaByName[name.getFullname()];
     } else {
@@ -60,7 +62,7 @@ class SchemaTable(SchemaT : Schema = Schema) {
   /// Adds a new schema to the set of known schemas.
   public void addSchema(SchemaT schema) {
     import avro.schema : NamedSchema;
-    _schemaByName[schema.getFullname()] = schema;
+    _schemaByName[schema.getFullname()] = rebindable(schema);
   }
 }
 

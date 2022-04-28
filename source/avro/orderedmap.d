@@ -38,6 +38,11 @@ struct OrderedMap(KeyT, ValueT) {
     return value;
   }
 
+  /// Returns whether the OrderedMap is empty or not.
+  bool isEmpty() const {
+    return orderedKeys.length == 0;
+  }
+
   /// Removes a single item from the map and the orderedKeys.
   void remove(KeyT key) {
     import std.algorithm : remove;
