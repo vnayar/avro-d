@@ -14,8 +14,6 @@ import avro.attributes : HasJsonAttributes;
 import avro.orderedmap : OrderedMap;
 import avro.exception : AvroRuntimeException, AvroTypeException, SchemaParseException;
 
-/*DEBUG*/ import std.stdio;
-
 version (unittest) {
   import std.exception : assertThrown, assertNotThrown;
 }
@@ -224,7 +222,7 @@ public abstract class Schema {
     If this is a record, returns the Field with the given name [fieldName]. If there is no field by
     that name, a [null] is returned.
   */
-  public const(Field) getField(string fieldName) const {
+  public inout(Field) getField(string fieldName) inout {
     throw new AvroRuntimeException("Not a record: " ~ this.toString);
   }
 
@@ -232,7 +230,7 @@ public abstract class Schema {
     If this is a record, returns the fields in it. The returned list is in the order of their
     positions.
   */
-  public const(Field[]) getFields() const {
+  public inout(Field[]) getFields() inout {
     throw new AvroRuntimeException("Not a record: " ~ this.toString);
   }
 
@@ -589,12 +587,14 @@ package class RecordSchema : NamedSchema {
   }
 
   override
-  public const(Field) getField(string fieldname) const {
-    return _fieldMap.get(fieldname, null);
+  public inout(Field) getField(string fieldname) inout {
+    if (fieldname !in _fieldMap)
+      throw new AvroRuntimeException("Invalid field name: " ~ fieldname);
+    return _fieldMap[fieldname];
   }
 
   override
-  public const(Field[]) getFields() const {
+  public inout(Field[]) getFields() inout {
     return _fields;
   }
 
@@ -666,7 +666,7 @@ package class RecordSchema : NamedSchema {
         }
         str ~= " ]";
       }
-      writeAttributes(str);
+      f.writeAttributes(str);
       str ~= " }";
     }
     str ~= "\n]";
@@ -683,6 +683,9 @@ unittest {
           new Field("a", new IntSchema(), null, JSONValue(3), true, Field.Order.IGNORE),
           new Field("b", new StringSchema(), "eeb", JSONValue("ab"), true, Field.Order.ASCENDING)
       ]);
+  // Add a custom user-defined attribute, to make sure it gets carried along.
+  schema.getField("a").addAttribute("custom", 3);
+
   assert(schema.getType() == Type.RECORD);
   assert(schema.getName() == "fish");
   assert(schema.getFullname() == "com.example.fish");
@@ -690,6 +693,7 @@ unittest {
   assert(schema.getFields().length == 2);
   assert(schema.getField("a").getName() == "a");
   assert(schema.getField("a").getPosition() == 0);
+  assert(schema.getField("a").getAttributes()["custom"] == JSONValue(3));
   assert(schema.getField("b").getName() == "b");
   assert(schema.getField("b").getPosition() == 1);
 
@@ -700,7 +704,7 @@ unittest {
   "name": "fish",
   "doc": "hello-doc",
   "fields": [
-    { "name": "a", "type": "int", "default": 3, "order": "IGNORE" },
+    { "name": "a", "type": "int", "default": 3, "order": "IGNORE", "custom": 3 },
     { "name": "b", "type": "string", "doc": "eeb", "default": "ab" }
   ]
 }

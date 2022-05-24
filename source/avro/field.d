@@ -1,6 +1,7 @@
 /// Avro fields that are part of an Avro record.
 module avro.field;
 
+import std.array : Appender;
 import std.json : JSONValue, JSONType;
 
 import avro.type : Type;
@@ -106,5 +107,12 @@ public class Field {
 
   public string[] getAliases() const {
     return aliases.keys;
+  }
+
+  // A helper function for toString to write attributes to a JSON object.
+  void writeAttributes(Appender!string str) const {
+    foreach (string key; getAttributes().orderedKeys) {
+      str ~= ", \"" ~ key ~ "\": " ~ getAttributes()[key].toString();
+    }
   }
 }

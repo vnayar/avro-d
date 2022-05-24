@@ -413,17 +413,8 @@ class GenericRecord : GenericContainer {
 
   /// Returns index of the field with the given name.
   size_t fieldIndex(string name) const {
-    size_t index = 0;
     auto field = getSchema().getField(name);
-    if (field is null) {
-      throw new AvroRuntimeException("Invalid field name: " ~ name);
-    }
     return field.getPosition();
-  }
-
-  /// Returns true if this record has a field with the given name.
-  bool hasField(string name) {
-    return getSchema().getField(name) !is null;
   }
 
   /// Returns the field data with the given name.
