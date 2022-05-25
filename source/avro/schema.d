@@ -281,7 +281,7 @@ public abstract class Schema {
 
   /** If this is a record, enum or fixed, returns its namespace, if any. */
   public string getNamespace() const {
-    throw new AvroRuntimeException("Not a named type: " ~ typeof(this).stringof);
+    throw new AvroRuntimeException("Not a named type: " ~ type.to!string);
   }
 
   /**
