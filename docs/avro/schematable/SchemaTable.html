@@ -151,7 +151,7 @@ $('#symbolSearchPane').show();</script>
 			<div class="prototype">
 				<code class="lang-d">
 					<div class="single-prototype">
-			<span class="kwd">class</span> <span class="typ">SchemaTable</span>
+			<span class="kwd">class</span> <span class="typ">SchemaTable</span>(SchemaT)
 			<span class="pun">;</span>
 					</div>
 				</code>
@@ -163,6 +163,28 @@ $('#symbolSearchPane').show();</script>
 </p>
 </section>
 
+			<section><h2>Fields</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Type</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schematable/SchemaTable._defaultNamespace.html" class="public"><code>_defaultNamespace</code></a>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">string</span></code></td><td>The namespace that should be used as the default during schema parsing.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../avro/schematable/SchemaTable._schemaByName.html" class="public"><code>_schemaByName</code></a>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">Rebindable</span>!SchemaT<span class="pun">[</span><span class="typ">string</span><span class="pun">]</span></code></td><td>Maps a fully qualified name to a Schema.
+</td>
+					</tr>
+				</table>
+			</section>
 			<section><h2>Methods</h2>
 				<table>
 					<col class="caption"/>
@@ -201,7 +223,12 @@ $('#symbolSearchPane').show();</script>
 					</tr>
 				</table>
 			</section>
-			<section><h2>See Also</h2>
+			<section><h2>Parameters</h2>
+<table><col class="caption"><tr><th>Name</th><th>Description</th></tr>
+<tr><td id="SchemaT">SchemaT</td><td> Allows the caller to override the stored type, e.g. with a const.</td></tr>
+</table>
+</section>
+<section><h2>See Also</h2>
 <p>https://avro.apache.org/docs/current/spec.html#names
 </p>
 </section>

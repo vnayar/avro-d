@@ -106,6 +106,7 @@
 <url><loc>http://127.0.0.1/avro/generic/genericdata.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericArray.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericArray.getValue.html</loc></url>
+<url><loc>http://127.0.0.1/avro/generic/genericdata/GenericArray.getValue.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericArray.this.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericContainer.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericDatum.html</loc></url>
@@ -141,7 +142,6 @@
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericRecord.fieldCount.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericRecord.fieldIndex.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericRecord.getField.html</loc></url>
-<url><loc>http://127.0.0.1/avro/generic/genericdata/GenericRecord.hasField.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericRecord.opIndex.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericRecord.setFieldAt.html</loc></url>
 <url><loc>http://127.0.0.1/avro/generic/genericdata/GenericRecord.this.html</loc></url>
@@ -164,6 +164,7 @@
 <url><loc>http://127.0.0.1/avro/attributes/HasJsonAttributes.html</loc></url>
 <url><loc>http://127.0.0.1/avro/attributes/HasJsonAttributes.addAttribute.html</loc></url>
 <url><loc>http://127.0.0.1/avro/attributes/HasJsonAttributes.getAttributes.html</loc></url>
+<url><loc>http://127.0.0.1/avro/attributes/HasJsonAttributes.hasAttributes.html</loc></url>
 <url><loc>http://127.0.0.1/avro/exception.html</loc></url>
 <url><loc>http://127.0.0.1/avro/exception/AvroRuntimeException.html</loc></url>
 <url><loc>http://127.0.0.1/avro/exception/AvroTypeException.html</loc></url>
@@ -175,11 +176,15 @@
 <url><loc>http://127.0.0.1/avro/field/Field.this.html</loc></url>
 <url><loc>http://127.0.0.1/avro/name.html</loc></url>
 <url><loc>http://127.0.0.1/avro/name/Name.html</loc></url>
+<url><loc>http://127.0.0.1/avro/name/Name.getFullname.html</loc></url>
+<url><loc>http://127.0.0.1/avro/name/Name.getName.html</loc></url>
+<url><loc>http://127.0.0.1/avro/name/Name.getNamespace.html</loc></url>
 <url><loc>http://127.0.0.1/avro/name/Name.this.html</loc></url>
 <url><loc>http://127.0.0.1/avro/name/Name.validateName.html</loc></url>
 <url><loc>http://127.0.0.1/avro/orderedmap.html</loc></url>
 <url><loc>http://127.0.0.1/avro/orderedmap/OrderedMap.html</loc></url>
 <url><loc>http://127.0.0.1/avro/orderedmap/OrderedMap.clear.html</loc></url>
+<url><loc>http://127.0.0.1/avro/orderedmap/OrderedMap.isEmpty.html</loc></url>
 <url><loc>http://127.0.0.1/avro/orderedmap/OrderedMap.map.html</loc></url>
 <url><loc>http://127.0.0.1/avro/orderedmap/OrderedMap.opAssign.html</loc></url>
 <url><loc>http://127.0.0.1/avro/orderedmap/OrderedMap.opIndexAssign.html</loc></url>
@@ -216,8 +221,11 @@
 <url><loc>http://127.0.0.1/avro/schema/Schema.hasEnumSymbol.html</loc></url>
 <url><loc>http://127.0.0.1/avro/schema/Schema.isError.html</loc></url>
 <url><loc>http://127.0.0.1/avro/schema/Schema.setFields.html</loc></url>
+<url><loc>http://127.0.0.1/avro/schema/Schema.toString.html</loc></url>
 <url><loc>http://127.0.0.1/avro/schematable.html</loc></url>
 <url><loc>http://127.0.0.1/avro/schematable/SchemaTable.html</loc></url>
+<url><loc>http://127.0.0.1/avro/schematable/SchemaTable._defaultNamespace.html</loc></url>
+<url><loc>http://127.0.0.1/avro/schematable/SchemaTable._schemaByName.html</loc></url>
 <url><loc>http://127.0.0.1/avro/schematable/SchemaTable.addSchema.html</loc></url>
 <url><loc>http://127.0.0.1/avro/schematable/SchemaTable.containsName.html</loc></url>
 <url><loc>http://127.0.0.1/avro/schematable/SchemaTable.getSchemaByName.html</loc></url>

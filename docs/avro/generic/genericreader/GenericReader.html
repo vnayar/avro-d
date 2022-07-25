@@ -278,6 +278,39 @@ EOS"</span><span class="pun">;
 </span><span class="kwd">assert</span><span class="pun">(</span><span class="pln">datum</span><span class="pun">[</span><span class="str">"favorite_color"</span><span class="pun">]<wbr/>.</span><span class="pln">getType</span><span class="pun">() == </span><span class="typ">Type<wbr/></span><span class="pun">.</span><span class="pln">NULL</span><span class="pun">);
 </span></code></pre>
 </section>
+<section><h2>Example</h2>
+
+<pre class="code"><code class="lang-d"><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">stdio</span><span class="pun">;
+</span><span class="kwd">import <a href="../../../avro/parser.html"></span><span class="pln">avro<wbr/></span><span class="pun">.</span><span class="pln">parser</span></a><span class="pln"> </span><span class="pun">: </span><span class="typ">Parser</span><span class="pun">;
+</span><span class="kwd">import </span><span class="pln">std<wbr/></span><span class="pun">.</span><span class="pln">exception </span><span class="pun">: </span><span class="pln">assertThrown</span><span class="pun">;
+</span><span class="kwd">import <a href="../../../avro/codec/jsondecoder.html"></span><span class="pln">avro<wbr/></span><span class="pun">.</span><span class="pln">codec<wbr/></span><span class="pun">.</span><span class="pln">jsondecoder</span></a><span class="pun">;
+
+</span><span class="kwd">auto </span><span class="pln">parser </span><span class="pun">= </span><span class="kwd">new </span><span class="typ">Parser</span><span class="pun">();
+</span><span class="typ">Schema </span><span class="pln">schema </span><span class="pun">= </span><span class="pln">parser<wbr/></span><span class="pun">.</span><span class="pln">parseText</span><span class="pun">(</span><span class="str">q"EOS
+{"namespace": "example.avro",
+"type": "record",
+"name": "User",
+"fields": [
+   {"name": "name", "type": "string"},
+   {"name": "favorite_number", "type": ["int", "null"]},
+   {"name": "favorite_color", "type": ["string", "null"]}
+]
+}
+EOS"</span><span class="pun">);
+
+</span><span class="typ">string </span><span class="pln">data </span><span class="pun">= </span><span class="str">q"EOS
+{
+"nam": "bob",
+"favorite_numbero": {"int": 8},
+"favorite_color": null
+}
+EOS"</span><span class="pun">;
+</span><span class="kwd">auto </span><span class="pln">decoder </span><span class="pun">= </span><span class="pln">jsonDecoder</span><span class="pun">(</span><span class="pln">data</span><span class="pun">);
+</span><span class="typ">GenericReader </span><span class="pln">reader </span><span class="pun">= </span><span class="kwd">new </span><span class="typ">GenericReader</span><span class="pun">(</span><span class="pln">schema</span><span class="pun">, </span><span class="pln">decoder</span><span class="pun">);
+</span><span class="typ">GenericDatum </span><span class="pln">datum</span><span class="pun">;
+</span><span class="pln">assertThrown</span><span class="pun">!</span><span class="typ">AvroRuntimeException</span><span class="pun">(</span><span class="pln">reader<wbr/></span><span class="pun">.</span><span class="pln">read</span><span class="pun">(</span><span class="pln">datum</span><span class="pun">));
+</span></code></pre>
+</section>
 
 			<footer>
 				<table class="license-info">
