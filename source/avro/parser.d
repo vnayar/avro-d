@@ -31,6 +31,7 @@ class Parser {
   private SchemaTable!() schemaTable = new SchemaTable!();
 
   /// Adds the provided types to the set of defined and named types known to this parser.
+  @trusted  // In ldc2, 'values' is @system.
   public Parser addSchemas(Schema[string] types) {
     foreach (Schema s; types.values)
       schemaTable.addSchema(s);
@@ -79,6 +80,7 @@ EOS");
   }
 
   /// Builds a [Schema] from a JSON parse tree.
+  @trusted  // In ldc2, 'keys' is @system.
   public Schema parseJson(JSONValue jsonSchema) {
     import std.algorithm : map;
     import std.uni : toUpper;

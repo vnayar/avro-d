@@ -105,6 +105,7 @@ public class Field {
     aliases[name] = true;
   }
 
+  @trusted  // "keys" is @system when using LDC2.
   public string[] getAliases() const {
     return aliases.keys;
   }

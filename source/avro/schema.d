@@ -539,7 +539,7 @@ package abstract class NamedSchema : Schema {
     return false;
   }
 
-  // A helper function for toString, writing the name into the JSON object being written.
+  /// A helper function for toString, writing the name into the JSON object being written.
   void writeName(SchemaTable!(const(Schema)) schemaTable, Appender!string str) const {
     if (getName() !is null)
       str ~= ", \"name\": \"" ~ getName() ~ "\"";
@@ -549,7 +549,8 @@ package abstract class NamedSchema : Schema {
       str ~= ", \"namespace\": \"\"";
   }
 
-  // A helper function for toString, writing aliases into the JSON object being written.
+  /// A helper function for toString, writing aliases into the JSON object being written.
+  @trusted  // In ldc2, 'keys' is @system.
   void writeAliases(Appender!string str) const {
     if (aliases is null || aliases.length == 0)
       return;
